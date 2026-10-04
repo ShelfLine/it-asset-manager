@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <title>Enterprise IT & HR Asset Manager</title>
-    <!-- SheetJS Library for Excel Import/Export -->
+    <title>Enterprise Asset Manager</title>
+    <!-- SheetJS Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ========================================================
-           1. RESET & RESPONSIVE CORE VARIABLES
+           1. MODERN ENTERPRISE VARIABLES & RESET
            ======================================================== */
         :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --slate-900: #0f172a;
-            --slate-800: #1e293b;
-            --slate-700: #334155;
-            --slate-100: #f1f5f9;
-            --slate-50: #f8fafc;
-            --border-color: #e2e8f0;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
+            --primary: #4f46e5;       /* Indigo 600 */
+            --primary-hover: #4338ca; /* Indigo 700 */
+            --bg-color: #f4f5f7;      /* Soft Light Gray */
+            --card-bg: #ffffff;
+            --text-main: #111827;     /* Slate 900 */
+            --text-muted: #6b7280;    /* Slate 500 */
+            --border: #e5e7eb;        /* Slate 200 */
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
             --safe-area-bottom: env(safe-area-inset-bottom, 0px);
         }
 
@@ -31,11 +31,11 @@
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f1f5f9;
+            background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
             min-height: 100dvh;
@@ -43,7 +43,7 @@
         }
 
         /* ========================================================
-           2. MOBILE-FRIENDLY & RESPONSIVE LOGIN SCREEN
+           2. AURORA MESH LOGIN SCREEN
            ======================================================== */
         .login-container {
             display: flex;
@@ -51,530 +51,229 @@
             align-items: center;
             min-height: 100vh;
             min-height: 100dvh;
-            padding: 20px 16px;
-            padding-bottom: calc(20px + var(--safe-area-bottom));
-            background: linear-gradient(-45deg, #090d16, #1e293b, #1e40af, #3b82f6);
-            background-size: 300% 300%;
-            animation: bgShift 14s ease infinite;
-        }
-
-        @keyframes bgShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .login-box {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 36px 24px;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            color: #ffffff;
-        }
-
-        .login-icon {
-            font-size: 42px;
-            margin-bottom: 8px;
-            display: inline-block;
-        }
-
-        .login-box h2 {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 6px;
-        }
-
-        .login-subtitle {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.75);
-            margin-bottom: 24px;
-        }
-
-        .login-box .input-group {
-            text-align: left;
-            margin-bottom: 16px;
-        }
-
-        .login-box label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        /* 16px font-size prevents iOS Safari auto-zoom */
-        .login-box input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(15, 23, 42, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            font-size: 16px;
-            color: #ffffff;
-            transition: all 0.2s ease;
-        }
-
-        .login-box input::placeholder {
-            color: rgba(255, 255, 255, 0.35);
-        }
-
-        .login-box input:focus {
-            outline: none;
-            border-color: #60a5fa;
-            background: rgba(15, 23, 42, 0.7);
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 10px;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 700;
-            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .login-box button:active {
-            transform: scale(0.98);
-        }
-
-        .credentials-hint {
-            margin-top: 24px;
-            padding: 16px;
-            background: rgba(15, 23, 42, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.75);
-            text-align: left;
-            line-height: 1.5;
-        }
-
-        .credentials-hint strong {
-            color: #ffffff;
-        }
-
-        .credentials-hint hr {
-            border: 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 10px 0;
-        }
-
-        .credentials-hint code {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #93c5fd;
-        }
-
-        /* ========================================================
-           3. APPLICATION HEADER & NAVIGATION (MOBILE/LAPTOP)
-           ======================================================== */
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 14px 20px;
-            background-color: var(--slate-850, #131d2e);
-            color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .user-badge {
-            background-color: #10b981;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .network-badge {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            background-color: #f59e0b;
-            color: white;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 1440px;
-            margin: 16px auto;
-            padding: 20px 16px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
-        }
-
-        h2.app-title {
-            text-align: center;
-            color: var(--slate-800);
-            font-size: clamp(20px, 4vw, 26px);
-            font-weight: 800;
-            margin-bottom: 22px;
-            letter-spacing: -0.5px;
-        }
-
-        /* ========================================================
-           4. ADAPTIVE DASHBOARD GRID
-           ======================================================== */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile for readable stats */
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        @media (min-width: 640px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 16px;
-            }
-        }
-
-        .dash-card {
-            border: none;
-            border-radius: 14px;
-            padding: 16px 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
+            padding: 20px;
+            background-color: #0f172a; /* Deep Slate Base */
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            user-select: none;
-            min-height: 98px;
         }
 
-        .card-total { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
-        .card-desktop { background: linear-gradient(135deg, #10b981 0%, #047857 100%); }
-        .card-laptop { background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); }
-        .card-printer { background: linear-gradient(135deg, #f97316 0%, #c2410c 100%); }
-        .card-xerox { background: linear-gradient(135deg, #8b5cf6 0%, #5b21b6 100%); }
-        .card-ups { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
-        .card-dept { background: linear-gradient(135deg, #06b6d4 0%, #0e7490 100%); }
+        /* Floating Light Orbs Animation */
+        .login-container::before, .login-container::after {
+            content: '';
+            position: absolute;
+            width: 50vw; height: 50vw;
+            max-width: 600px; max-height: 600px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            animation: float 12s infinite alternate ease-in-out;
+            z-index: 0;
+        }
+        .login-container::before { background: #4f46e5; top: -10%; left: -10%; }
+        .login-container::after { background: #db2777; bottom: -10%; right: -10%; animation-delay: -6s; }
 
-        .dash-card.clickable {
-            cursor: pointer;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.1); }
         }
 
-        .dash-card.clickable:active {
-            transform: scale(0.96);
-        }
-
-        @media (hover: hover) {
-            .dash-card.clickable:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
-            }
-        }
-
-        .dash-card.active {
-            box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #1e293b;
-            transform: translateY(-2px);
-        }
-
-        .dash-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-
-        .dash-title {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            opacity: 0.9;
+        /* Sleek Glass Box */
+        .login-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%; max-width: 400px;
             text-align: center;
+            color: #ffffff;
+            z-index: 1;
         }
 
-        .dash-value {
-            font-size: 26px;
-            font-weight: 800;
-            line-height: 1.1;
+        .login-icon { font-size: 40px; margin-bottom: 12px; }
+        .login-box h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .login-subtitle { font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 30px; }
+
+        .login-box .input-group { text-align: left; margin-bottom: 18px; }
+        .login-box label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        .login-box input {
+            width: 100%; padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 16px; color: #ffffff;
+            transition: all 0.3s ease;
         }
+        .login-box input:focus { outline: none; border-color: #818cf8; background: rgba(0, 0, 0, 0.4); box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15); }
+        .login-box input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+        .login-box button {
+            width: 100%; padding: 15px; margin-top: 10px;
+            background: #4f46e5;
+            color: white; border: none; border-radius: 12px;
+            cursor: pointer; font-size: 15px; font-weight: 700;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+            transition: all 0.2s ease;
+        }
+        .login-box button:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(79, 70, 229, 0.5); }
+        .login-box button:active { transform: translateY(0); }
+
+        .credentials-hint {
+            margin-top: 30px; padding: 16px;
+            background: rgba(0, 0, 0, 0.2); border-radius: 14px;
+            font-size: 12px; color: rgba(255, 255, 255, 0.6); text-align: left; line-height: 1.6;
+        }
+        .credentials-hint code { background: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 6px; color: #a5b4fc; font-family: monospace;}
+        .credentials-hint hr { border: 0; border-top: 1px solid rgba(255,255,255,0.05); margin: 10px 0; }
 
         /* ========================================================
-           5. ADAPTIVE FORMS & INPUTS
+           3. SLEEK HEADER & LAYOUT
+           ======================================================== */
+        .main-header {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+            padding: 16px 24px; background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 20;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .header-brand { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 18px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;}
+        .user-badge { background-color: #e0e7ff; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .network-badge { background-color: #fef3c7; color: #d97706; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+        .app-container {
+            width: 100%; max-width: 1400px; margin: 24px auto; padding: 0 20px;
+        }
+
+        h2.app-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 24px; letter-spacing: -0.5px; }
+
+        /* ========================================================
+           4. MINIMALIST DASHBOARD CARDS
+           ======================================================== */
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 30px;
+        }
+        @media (min-width: 640px) { .dashboard-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } }
+
+        .dash-card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+            padding: 20px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .dash-card.clickable { cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .dash-card.clickable:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.08); border-color: #c7d2fe; }
+        
+        .dash-card.active { border: 2px solid var(--primary); background: #e0e7ff; transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.25); }
+        .dash-card.active .dash-icon-wrapper { background: var(--primary); }
+
+        .dash-icon-wrapper {
+            background: var(--bg-color); width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .dash-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; text-align: center; }
+        .dash-value { font-size: 28px; font-weight: 800; color: var(--text-main); line-height: 1; }
+
+        /* ========================================================
+           5. CLEAN FORMS & ACTION BARS
            ======================================================== */
         .form-section {
-            background-color: var(--slate-50);
-            padding: 20px 16px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 22px;
+            background: var(--card-bg); padding: 24px; border-radius: 16px; border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); margin-bottom: 24px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr; /* 1 column on phone */
-            gap: 14px;
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media (min-width: 640px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .form-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } }
+
+        .form-group label { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; display: block; }
+        
+        .form-group input, .form-group select, .search-section input {
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px;
+            font-size: 16px; /* Prevents iOS Zoom */ color: var(--text-main); background-color: var(--bg-color);
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .search-section input:focus {
+            outline: none; border-color: var(--primary); background: var(--card-bg); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
 
-        @media (min-width: 640px) {
-            .form-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        .submit-container { text-align: right; margin-top: 20px; }
 
-        @media (min-width: 1024px) {
-            .form-grid {
-                grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            }
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--slate-700);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        /* 16px prevents iOS zoom on tap */
-        .form-group input,
-        .form-group select {
-            padding: 12px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: #ffffff;
-            color: var(--text-main);
-            width: 100%;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-
-        .submit-container {
-            text-align: center;
-            margin-top: 18px;
-        }
-
-        /* ========================================================
-           6. RESPONSIVE ACTION BAR & BUTTONS
-           ======================================================== */
         .action-bar {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            background-color: var(--slate-50);
-            padding: 16px;
-            border-radius: 14px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
+            display: flex; flex-direction: column; gap: 16px; background: var(--card-bg); padding: 16px 20px;
+            border-radius: 16px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
         }
+        @media (min-width: 900px) { .action-bar { flex-direction: row; justify-content: space-between; } }
 
-        @media (min-width: 900px) {
-            .action-bar {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
+        .search-section { width: 100%; max-width: 350px; }
+        
+        .import-section { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; border: 1px dashed #cbd5e1; background: var(--bg-color); }
+        .import-section label { font-size: 13px; font-weight: 700; color: var(--text-main); }
+        .import-section input[type="file"] { font-size: 12px; color: var(--text-muted); background: transparent; border: none; padding: 0;}
+        .import-section input[type="file"]:focus { box-shadow: none; }
 
-        .search-section {
-            width: 100%;
-        }
-
-        @media (min-width: 900px) {
-            .search-section {
-                width: auto;
-                flex: 1;
-                max-width: 380px;
-            }
-        }
-
-        .search-section input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .import-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: white;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px dashed #cbd5e1;
-            overflow-x: auto;
-        }
-
-        .import-section label {
-            font-size: 13px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .import-section input[type="file"] {
-            font-size: 12px;
-            color: var(--text-muted);
-            max-width: 100%;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
+        .action-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
 
         button {
-            padding: 11px 18px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.15s ease;
-            min-height: 42px; /* iOS Human Interface tap-target compliance */
+            padding: 12px 20px; border: none; border-radius: 10px; font-weight: 700; font-size: 14px;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s ease; min-height: 44px; /* Mobile tap target */
         }
+        button:active { transform: scale(0.97); }
 
-        button:active {
-            transform: scale(0.97);
-        }
-
-        .btn-primary { background-color: var(--primary); }
-        .btn-primary:hover { background-color: var(--primary-hover); }
-        .btn-edit { background-color: #f59e0b; color: #1e293b; padding: 6px 12px; min-height: 32px; font-size: 12px; }
-        .btn-delete, .btn-danger { background-color: #ef4444; }
-        .btn-delete { padding: 6px 12px; min-height: 32px; font-size: 12px; }
-        .btn-delete:hover, .btn-danger:hover { background-color: #dc2626; }
-        .btn-print { background-color: #64748b; }
-        .btn-print:hover { background-color: #475569; }
-        .btn-export { background-color: #10b981; }
-        .btn-export:hover { background-color: #059669; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
+        .btn-primary:hover { background: var(--primary-hover); }
+        
+        .btn-edit { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border); padding: 8px 14px; min-height: 34px; font-size: 13px; }
+        .btn-edit:hover { background: #e2e8f0; }
+        
+        .btn-delete { background: #fee2e2; color: #b91c1c; padding: 8px 14px; min-height: 34px; font-size: 13px; }
+        .btn-delete:hover { background: #fca5a5; }
+        
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-print { background: var(--text-main); color: white; }
+        .btn-export { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
 
         @media (max-width: 600px) {
-            .action-buttons {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .action-buttons button {
-                width: 100%;
-            }
-            .submit-container button {
-                width: 100%;
-            }
+            .action-buttons, .action-buttons button { width: 100%; }
+            .submit-container button { width: 100%; }
         }
 
         /* ========================================================
-           7. RESPONSIVE TABLE WRAPPER
+           6. CLEAN TABLES
            ======================================================== */
         .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            background: white;
-            position: relative;
+            overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border);
+            border-radius: 16px; background: var(--card-bg); position: relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1200px; /* Guarantees table columns never squish on phones */
-        }
-
-        th, td {
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 14px;
-            text-align: left;
-            font-size: 13px;
-        }
-
-        th {
-            background-color: var(--slate-800);
-            color: #ffffff;
-            white-space: nowrap;
-            font-weight: 700;
-            position: sticky;
-            top: 0;
-            z-index: 2;
-        }
-
-        tr:nth-child(even) { background-color: #f8fafc; }
-        tr:hover { background-color: #f1f5f9; }
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; text-align: left; }
+        
+        th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+        th { background-color: var(--card-bg); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 2; border-bottom: 2px solid var(--border);}
+        
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: var(--bg-color); }
 
         .admin-only { display: none; }
 
         #loadingOverlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            font-weight: 700;
-            font-size: 16px;
-            color: var(--primary);
-            z-index: 10;
-            backdrop-filter: blur(2px);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8);
+            display: none; justify-content: center; align-items: center; font-weight: 700; color: var(--primary);
+            z-index: 10; backdrop-filter: blur(2px); border-radius: 16px;
         }
 
         /* ========================================================
-           8. PRINT SPECIFICATIONS
+           7. PRINT STYLES
            ======================================================== */
         @media print {
-            @page { size: landscape; margin: 6mm; }
+            @page { size: landscape; margin: 5mm; }
             #loginScreen, .main-header, .form-section, .dashboard-grid, .action-bar, h2.app-title { display: none !important; }
             .app-container { margin: 0 !important; padding: 0 !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; }
             .table-responsive { overflow: visible !important; border: none !important; }
@@ -586,12 +285,12 @@
 </head>
 <body>
 
-    <!-- ================= PREMIUM RESPONSIVE LOGIN SCREEN ================= -->
+    <!-- ================= PREMIUM AURORA LOGIN ================= -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
-            <div class="login-icon">🌐</div>
-            <h2>Enterprise Gateway</h2>
-            <div class="login-subtitle">Secure Asset & Employee Portal</div>
+            <div class="login-icon">✨</div>
+            <h2>Enterprise Portal</h2>
+            <div class="login-subtitle">Asset & Directory Management</div>
             
             <form id="loginForm">
                 <div class="input-group">
@@ -602,9 +301,9 @@
                     <label>Password</label>
                     <input type="password" id="loginPass" placeholder="Enter password" required>
                 </div>
-                <button type="submit">Authenticate Session</button>
+                <button type="submit">Authenticate</button>
             </form>
-            <p id="loginError" style="color: #fca5a5; font-size: 13px; display: none; margin-top: 14px; font-weight: 700;">⚠️ Invalid Username or Password!</p>
+            <p id="loginError" style="color: #fca5a5; font-size: 13px; display: none; margin-top: 14px; font-weight: 600;">Invalid Credentials</p>
             
             <div class="credentials-hint">
                 <div style="margin-bottom: 4px;"><strong>IT Admin (Full Access):</strong></div>
@@ -624,51 +323,51 @@
         
         <div class="main-header">
             <div class="header-brand">
-                <span>Enterprise Portal</span>
+                <span>Enterprise</span>
                 <span id="roleBadge" class="user-badge"></span>
                 <span id="networkBadge" class="network-badge"></span>
             </div>
-            <button class="btn-danger" onclick="logout()" style="padding: 6px 14px; min-height: 36px; font-size: 13px;">Logout</button>
+            <button class="btn-edit" onclick="logout()" style="border:none; margin:0; padding: 6px 14px; min-height: 36px;">Log out</button>
         </div>
 
-        <!-- ================= IT ASSET DASHBOARD (Admin / User) ================= -->
+        <!-- ================= IT ASSET DASHBOARD ================= -->
         <div id="itDashboard" class="app-container" style="display:none;">
-            <h2 class="app-title">IT Asset Management Database</h2>
+            <h2 class="app-title">IT Asset Database</h2>
 
-            <!-- ADAPTIVE CLICKABLE DASHBOARD GRID -->
+            <!-- MINIMALIST DASHBOARD GRID -->
             <div class="dashboard-grid" id="itDashboardGrid">
-                <div class="dash-card card-total clickable active" id="filter-all" onclick="filterItTable('all')" title="View All Assets">
-                    <div class="dash-icon">📊</div>
+                <div class="dash-card clickable active" id="filter-all" onclick="filterItTable('all')" title="View All Assets">
+                    <div class="dash-icon-wrapper">📊</div>
                     <div class="dash-title">Total Assets</div>
                     <div class="dash-value" id="itTotal">0</div>
                 </div>
-                <div class="dash-card card-desktop clickable" id="filter-desktop" onclick="filterItTable('desktop')" title="View Desktops">
-                    <div class="dash-icon">🖥️</div>
+                <div class="dash-card clickable" id="filter-desktop" onclick="filterItTable('desktop')" title="View Desktops">
+                    <div class="dash-icon-wrapper">🖥️</div>
                     <div class="dash-title">Desktops</div>
                     <div class="dash-value" id="itDesktops">0</div>
                 </div>
-                <div class="dash-card card-laptop clickable" id="filter-laptop" onclick="filterItTable('laptop')" title="View Laptops">
-                    <div class="dash-icon">💻</div>
+                <div class="dash-card clickable" id="filter-laptop" onclick="filterItTable('laptop')" title="View Laptops">
+                    <div class="dash-icon-wrapper">💻</div>
                     <div class="dash-title">Laptops</div>
                     <div class="dash-value" id="itLaptops">0</div>
                 </div>
-                <div class="dash-card card-printer clickable" id="filter-printer" onclick="filterItTable('printer')" title="View Printers">
-                    <div class="dash-icon">🖨️</div>
+                <div class="dash-card clickable" id="filter-printer" onclick="filterItTable('printer')" title="View Printers">
+                    <div class="dash-icon-wrapper">🖨️</div>
                     <div class="dash-title">Printers</div>
                     <div class="dash-value" id="itPrinters">0</div>
                 </div>
-                <div class="dash-card card-xerox clickable" id="filter-xerox" onclick="filterItTable('xerox')" title="View Xerox Machines">
-                    <div class="dash-icon">📠</div>
+                <div class="dash-card clickable" id="filter-xerox" onclick="filterItTable('xerox')" title="View Xerox Machines">
+                    <div class="dash-icon-wrapper">📠</div>
                     <div class="dash-title">Xerox</div>
                     <div class="dash-value" id="itXerox">0</div>
                 </div>
-                <div class="dash-card card-ups clickable" id="filter-ups" onclick="filterItTable('ups')" title="View UPS">
-                    <div class="dash-icon">⚡</div>
+                <div class="dash-card clickable" id="filter-ups" onclick="filterItTable('ups')" title="View UPS">
+                    <div class="dash-icon-wrapper">⚡</div>
                     <div class="dash-title">UPS</div>
                     <div class="dash-value" id="itUps">0</div>
                 </div>
-                <div class="dash-card card-dept">
-                    <div class="dash-icon">🏢</div>
+                <div class="dash-card">
+                    <div class="dash-icon-wrapper">🏢</div>
                     <div class="dash-title">Depts</div>
                     <div class="dash-value" id="itDepts">0</div>
                 </div>
@@ -695,32 +394,32 @@
                         <div class="form-group"><label>Xerox Serial</label><input type="text" id="xeroxSerial"></div>
                     </div>
                     <div class="submit-container">
-                        <button type="submit" class="btn-primary" id="itSubmitBtn">Add IT Record</button>
+                        <button type="submit" class="btn-primary" id="itSubmitBtn">Save Asset Record</button>
                     </div>
                 </form>
             </div>
 
             <div class="action-bar">
                 <div class="search-section">
-                    <input type="text" id="itSearch" placeholder="🔍 Search by name, serial...">
+                    <input type="text" id="itSearch" placeholder="🔍 Search database...">
                 </div>
                 <div class="import-section admin-only" id="itImportSection">
-                    <label style="color:var(--primary);"><strong>📂 Import:</strong></label>
+                    <label>Import Data</label>
                     <input type="file" id="itImportFile" accept=".xlsx, .xls, .csv">
                 </div>
                 <div class="action-buttons">
-                    <button type="button" class="btn-danger admin-only" id="itClearAllBtn" onclick="clearAllItData()">🗑️ Clear</button>
-                    <button type="button" class="btn-print" onclick="window.print()">🖨️ Print</button>
-                    <button type="button" class="btn-export" onclick="exportItExcel()">📥 Export</button>
+                    <button type="button" class="btn-danger admin-only" id="itClearAllBtn" onclick="clearAllItData()">Clear All</button>
+                    <button type="button" class="btn-print" onclick="window.print()">Print</button>
+                    <button type="button" class="btn-export" onclick="exportItExcel()">Export Data</button>
                 </div>
             </div>
 
             <div class="table-responsive">
-                <div id="itLoading"></div>
+                <div id="itLoading">Updating...</div>
                 <table>
                     <thead>
                         <tr>
-                            <th>SR. NO</th><th>EMP ID</th><th>User Name</th><th>Location</th><th>Department</th><th>System Type</th><th>Model No</th>
+                            <th>#</th><th>EMP ID</th><th>User Name</th><th>Location</th><th>Department</th><th>Type</th><th>Model No</th>
                             <th>Serial Number</th><th>Processor</th><th>RAM</th><th>Harddisk</th><th>Printer Model</th>
                             <th>Printer Serial</th><th>UPS Model</th><th>UPS Serial</th><th>Xerox Model</th><th>Xerox Serial</th>
                             <th class="action-col admin-only" id="itActionsHeader">Actions</th> 
@@ -733,16 +432,16 @@
 
         <!-- ================= EMPLOYEE DASHBOARD (Emp Only) ================= -->
         <div id="empDashboard" class="app-container" style="display:none;">
-            <h2 class="app-title">Employee Data Directory</h2>
+            <h2 class="app-title">Employee Directory</h2>
 
             <div class="dashboard-grid">
-                <div class="dash-card card-total">
-                    <div class="dash-icon">👥</div>
+                <div class="dash-card active">
+                    <div class="dash-icon-wrapper">👥</div>
                     <div class="dash-title">Total Employees</div>
                     <div class="dash-value" id="empTotal">0</div>
                 </div>
-                <div class="dash-card card-dept">
-                    <div class="dash-icon">🏢</div>
+                <div class="dash-card">
+                    <div class="dash-icon-wrapper">🏢</div>
                     <div class="dash-title">Active Departments</div>
                     <div class="dash-value" id="empDepts">0</div>
                 </div>
@@ -752,46 +451,46 @@
                 <form id="empForm">
                     <div class="form-grid">
                         <div class="form-group"><label>EMP ID</label><input type="text" id="empId" required></div>
-                        <div class="form-group"><label>EMPLOYEE NAME</label><input type="text" id="empName" required></div>
-                        <div class="form-group"><label>NEW DESIGNATION</label><input type="text" id="designation"></div>
-                        <div class="form-group"><label>DEPARTMENT</label><input type="text" id="empDepartment" required></div>
-                        <div class="form-group"><label>DIVISION</label><input type="text" id="division"></div>
-                        <div class="form-group"><label>DATE OF JOINING</label><input type="text" placeholder="DD-MM-YYYY" id="doj"></div>
-                        <div class="form-group"><label>DATE OF LEAVING</label><input type="text" placeholder="DD-MM-YYYY" id="dol"></div>
-                        <div class="form-group"><label>INSTITUTION</label><input type="text" id="institution"></div>
-                        <div class="form-group"><label>BANK ACCOUNT NO</label><input type="text" id="bankAcc"></div>
+                        <div class="form-group"><label>Employee Name</label><input type="text" id="empName" required></div>
+                        <div class="form-group"><label>Designation</label><input type="text" id="designation"></div>
+                        <div class="form-group"><label>Department</label><input type="text" id="empDepartment" required></div>
+                        <div class="form-group"><label>Division</label><input type="text" id="division"></div>
+                        <div class="form-group"><label>Date Joined</label><input type="text" placeholder="DD-MM-YYYY" id="doj"></div>
+                        <div class="form-group"><label>Date Left</label><input type="text" placeholder="DD-MM-YYYY" id="dol"></div>
+                        <div class="form-group"><label>Institution</label><input type="text" id="institution"></div>
+                        <div class="form-group"><label>Bank Acc No</label><input type="text" id="bankAcc"></div>
                         <div class="form-group"><label>IFSC</label><input type="text" id="ifsc"></div>
-                        <div class="form-group"><label>REMARK</label><input type="text" id="remark"></div>
+                        <div class="form-group"><label>Remarks</label><input type="text" id="remark"></div>
                     </div>
                     <div class="submit-container">
-                        <button type="submit" class="btn-primary" id="empSubmitBtn">Add Employee</button>
+                        <button type="submit" class="btn-primary" id="empSubmitBtn">Save Employee Record</button>
                     </div>
                 </form>
             </div>
 
             <div class="action-bar">
                 <div class="search-section">
-                    <input type="text" id="empSearch" placeholder="🔍 Search by name or EMP ID...">
+                    <input type="text" id="empSearch" placeholder="🔍 Search directory...">
                 </div>
                 <div class="import-section">
-                    <label style="color:#059669;"><strong>📂 Import:</strong></label>
+                    <label>Import</label>
                     <input type="file" id="empImportFile" accept=".xlsx, .xls, .csv">
                 </div>
                 <div class="action-buttons">
-                    <button type="button" class="btn-danger" id="empClearAllBtn" onclick="clearAllEmpData()">🗑️ Clear</button>
-                    <button type="button" class="btn-print" onclick="window.print()">🖨️ Print</button>
-                    <button type="button" class="btn-export" onclick="exportEmpExcel()">📥 Export</button>
+                    <button type="button" class="btn-danger" id="empClearAllBtn" onclick="clearAllEmpData()">Clear All</button>
+                    <button type="button" class="btn-print" onclick="window.print()">Print</button>
+                    <button type="button" class="btn-export" onclick="exportEmpExcel()">Export Data</button>
                 </div>
             </div>
 
             <div class="table-responsive">
-                <div id="empLoading"></div>
+                <div id="empLoading">Updating...</div>
                 <table>
                     <thead>
                         <tr>
-                            <th>SR. NO</th><th>EMP ID</th><th>EMPLOYEE NAME</th><th>NEW DESIGNATION</th>
-                            <th>DEPARTMENT</th><th>DIVISION</th><th>DATE OF JOINING</th><th>DATE OF LEAVING</th>
-                            <th>INSTITUTION</th><th>BANK ACCOUNT NO</th><th>IFSC</th><th>REMARK</th>
+                            <th>#</th><th>EMP ID</th><th>EMPLOYEE NAME</th><th>DESIGNATION</th>
+                            <th>DEPARTMENT</th><th>DIVISION</th><th>JOIN DATE</th><th>LEAVE DATE</th>
+                            <th>INSTITUTION</th><th>BANK ACCOUNT</th><th>IFSC</th><th>REMARKS</th>
                             <th class="action-col">Actions</th> 
                         </tr>
                     </thead>
@@ -816,7 +515,7 @@
         document.getElementById('networkBadge').innerText = 'CLOUD';
         document.getElementById('networkBadge').style.backgroundColor = '#10b981'; 
     } else {
-        document.getElementById('networkBadge').innerText = 'OFFLINE';
+        document.getElementById('networkBadge').innerText = 'LOCAL';
         document.getElementById('networkBadge').style.backgroundColor = '#f59e0b'; 
     }
 
@@ -863,7 +562,7 @@
 
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const user = document.getElementById('loginUser').value;
+        const user = document.getElementById('loginUser').value.toLowerCase().trim();
         const pass = document.getElementById('loginPass').value;
         
         if (user === 'admin' && pass === 'admin123') handleLoginSuccess('admin');
@@ -889,15 +588,15 @@
         const roleBadge = document.getElementById('roleBadge');
 
         if (role === 'admin') {
-            roleBadge.innerText = 'IT ADMIN'; roleBadge.style.backgroundColor = '#10b981';
+            roleBadge.innerText = 'IT ADMIN'; 
             itDash.style.display = 'block'; empDash.style.display = 'none';
             document.getElementById('itFormSection').style.display = 'block';
             document.getElementById('itImportSection').style.display = 'flex';
-            document.getElementById('itClearAllBtn').style.display = 'inline-block';
+            document.getElementById('itClearAllBtn').style.display = 'inline-flex';
             document.getElementById('itActionsHeader').style.display = 'table-cell';
             loadItData();
         } else if (role === 'user') {
-            roleBadge.innerText = 'IT STAFF'; roleBadge.style.backgroundColor = '#64748b';
+            roleBadge.innerText = 'IT STAFF'; roleBadge.style.backgroundColor = '#64748b'; roleBadge.style.color = '#fff';
             itDash.style.display = 'block'; empDash.style.display = 'none';
             document.getElementById('itFormSection').style.display = 'none';
             document.getElementById('itImportSection').style.display = 'none';
@@ -905,7 +604,7 @@
             document.getElementById('itActionsHeader').style.display = 'none';
             loadItData();
         } else if (role === 'emp') {
-            roleBadge.innerText = 'HR PORTAL'; roleBadge.style.backgroundColor = '#8b5cf6';
+            roleBadge.innerText = 'HR PORTAL'; roleBadge.style.backgroundColor = '#fce7f3'; roleBadge.style.color = '#db2777';
             itDash.style.display = 'none'; empDash.style.display = 'block';
             loadEmpData();
         }
@@ -947,8 +646,7 @@
         const btn = document.getElementById('itSubmitBtn'); btn.disabled = true;
         
         const newData = {
-            empId: getVal('itEmpId'), 
-            userName: getVal('userName'), location: getVal('location'), department: getVal('department'),
+            empId: getVal('itEmpId'), userName: getVal('userName'), location: getVal('location'), department: getVal('department'),
             systemType: getVal('systemType'), sysModel: getVal('sysModel'), sysSerial: getVal('sysSerial'),
             processor: getVal('processor'), ram: getVal('ram'), hdd: getVal('hdd'),
             printerModel: getVal('printerModel'), printerSerial: getVal('printerSerial'),
@@ -968,7 +666,7 @@
             localStorage.setItem('itAssetData', JSON.stringify(itDataList));
         }
 
-        itEditId = null; btn.textContent = 'Add IT Record'; btn.disabled = false;
+        itEditId = null; btn.textContent = 'Save Asset Record'; btn.disabled = false;
         document.getElementById('itForm').reset(); 
         await loadItData();
     });
@@ -995,27 +693,27 @@
             localStorage.setItem('empData', JSON.stringify(empDataList));
         }
 
-        empEditId = null; btn.textContent = 'Add Employee'; btn.disabled = false;
+        empEditId = null; btn.textContent = 'Save Employee Record'; btn.disabled = false;
         document.getElementById('empForm').reset(); 
         await loadEmpData();
     });
 
     async function deleteItData(id) {
-        if (!confirm('Delete this IT record?')) return;
+        if (!confirm('Permanently delete this IT record?')) return;
         if (isCloudConnected) await supabaseClient.from('it_assets').delete().eq('id', id);
         else { itDataList = itDataList.filter(x => x.id !== id); localStorage.setItem('itAssetData', JSON.stringify(itDataList)); }
         loadItData();
     }
 
     async function deleteEmpData(id) {
-        if (!confirm('Delete this Employee record?')) return;
+        if (!confirm('Permanently delete this Employee record?')) return;
         if (isCloudConnected) await supabaseClient.from('employee_data').delete().eq('id', id);
         else { empDataList = empDataList.filter(x => x.id !== id); localStorage.setItem('empData', JSON.stringify(empDataList)); }
         loadEmpData();
     }
 
     async function clearAllItData() {
-        if (confirm('🚨 WARNING: Are you sure you want to permanently delete ALL IT Assets?')) {
+        if (confirm('🚨 WARNING: Delete ALL IT Assets?')) {
             if (confirm('Final warning: Delete everything?')) {
                 if (isCloudConnected) {
                     const { error } = await supabaseClient.from('it_assets').delete().gt('id', 0);
@@ -1023,14 +721,13 @@
                 } else {
                     itDataList = []; localStorage.removeItem('itAssetData');
                 }
-                alert('All IT Data cleared.');
-                await loadItData();
+                alert('IT Data cleared.'); await loadItData();
             }
         }
     }
 
     async function clearAllEmpData() {
-        if (confirm('🚨 WARNING: Are you sure you want to permanently delete ALL Employee Data?')) {
+        if (confirm('🚨 WARNING: Delete ALL Employee Data?')) {
             if (confirm('Final warning: Delete everything?')) {
                 if (isCloudConnected) {
                     const { error } = await supabaseClient.from('employee_data').delete().gt('id', 0);
@@ -1038,8 +735,7 @@
                 } else {
                     empDataList = []; localStorage.removeItem('empData');
                 }
-                alert('All Employee Data cleared.');
-                await loadEmpData();
+                alert('Employee Data cleared.'); await loadEmpData();
             }
         }
     }
@@ -1108,8 +804,7 @@
         if(type !== 'depts') document.getElementById('filter-' + type).classList.add('active');
         
         if (type === 'all') {
-            filteredData = itDataList;
-            searchBox.value = '';
+            filteredData = itDataList; searchBox.value = '';
         } else if (type === 'desktop') {
             filteredData = itDataList.filter(data => data.systemType?.toLowerCase().includes('desktop') || data.systemtype?.toLowerCase().includes('desktop'));
             searchBox.value = 'Filter: Desktops';
@@ -1126,7 +821,6 @@
             filteredData = itDataList.filter(data => hasValidHardwareData(data.upsModel, data.upsmodel, data.upsSerial, data.upsserial));
             searchBox.value = 'Filter: UPS';
         }
-        
         renderItTable(filteredData);
     }
 
@@ -1164,7 +858,6 @@
 
         dataToRender.forEach((data, index) => {
             if(data.department) depts.add(data.department.toLowerCase());
-
             let row = `<tr>
                 <td>${index + 1}</td><td>${data.empId||''}</td><td>${data.empName||''}</td><td>${data.designation||''}</td>
                 <td>${data.department||''}</td><td>${data.division||''}</td><td>${data.doj||''}</td><td>${data.dol||''}</td>
@@ -1180,10 +873,8 @@
     document.getElementById('itSearch').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         if(term.startsWith('filter:')) return; 
-        
         document.querySelectorAll('#itDashboardGrid .dash-card').forEach(card => card.classList.remove('active'));
         document.getElementById('filter-all').classList.add('active');
-        
         renderItTable(itDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term)));
     });
     
@@ -1199,20 +890,12 @@
         const searchBox = document.getElementById('itSearch').value;
         let dataToExport = itDataList;
         
-        if (searchBox === 'Filter: Desktops') {
-            dataToExport = itDataList.filter(data => data.systemType?.toLowerCase().includes('desktop') || data.systemtype?.toLowerCase().includes('desktop'));
-        } else if (searchBox === 'Filter: Laptops') {
-            dataToExport = itDataList.filter(data => data.systemType?.toLowerCase().includes('laptop') || data.systemtype?.toLowerCase().includes('laptop'));
-        } else if (searchBox === 'Filter: Printers') {
-            dataToExport = itDataList.filter(data => hasValidHardwareData(data.printerModel, data.printermodel, data.printerSerial, data.printerserial));
-        } else if (searchBox === 'Filter: Xerox Machines') {
-            dataToExport = itDataList.filter(data => hasValidHardwareData(data.xeroxModel, data.xeroxmodel, data.xeroxSerial, data.xeroxserial));
-        } else if (searchBox === 'Filter: UPS') {
-            dataToExport = itDataList.filter(data => hasValidHardwareData(data.upsModel, data.upsmodel, data.upsSerial, data.upsserial));
-        } else if (searchBox && !searchBox.startsWith('Filter:')) {
-            const term = searchBox.toLowerCase();
-            dataToExport = itDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term));
-        }
+        if (searchBox === 'Filter: Desktops') dataToExport = itDataList.filter(d => d.systemType?.toLowerCase().includes('desktop') || d.systemtype?.toLowerCase().includes('desktop'));
+        else if (searchBox === 'Filter: Laptops') dataToExport = itDataList.filter(d => d.systemType?.toLowerCase().includes('laptop') || d.systemtype?.toLowerCase().includes('laptop'));
+        else if (searchBox === 'Filter: Printers') dataToExport = itDataList.filter(d => hasValidHardwareData(d.printerModel, d.printermodel, d.printerSerial, d.printerserial));
+        else if (searchBox === 'Filter: Xerox Machines') dataToExport = itDataList.filter(d => hasValidHardwareData(d.xeroxModel, d.xeroxmodel, d.xeroxSerial, d.xeroxserial));
+        else if (searchBox === 'Filter: UPS') dataToExport = itDataList.filter(d => hasValidHardwareData(d.upsModel, d.upsmodel, d.upsSerial, d.upsserial));
+        else if (searchBox && !searchBox.startsWith('Filter:')) dataToExport = itDataList.filter(x => JSON.stringify(x).toLowerCase().includes(searchBox.toLowerCase()));
 
         const clean = dataToExport.map(({ id, ...rest }) => rest);
         const ws = XLSX.utils.json_to_sheet(clean); const wb = XLSX.utils.book_new();
@@ -1222,7 +905,6 @@
     function exportEmpExcel() {
         const term = document.getElementById('empSearch').value.toLowerCase();
         let dataToExport = term ? empDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term)) : empDataList;
-        
         const clean = dataToExport.map(({ id, ...rest }) => rest);
         const ws = XLSX.utils.json_to_sheet(clean); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Employee_Data"); XLSX.writeFile(wb, "Employee_Directory.xlsx");
@@ -1237,23 +919,13 @@
             if (raw.length > 0) {
                 const mapped = raw.map(r => ({
                     empId: r['empId']||r['EMP ID']||r['empid']||'', 
-                    userName: r['userName']||r['User Name']||r['username']||'', 
-                    location: r['location']||r['Location']||'', 
-                    department: r['department']||r['Department']||'',
-                    systemType: r['systemType']||r['System Type']||r['Desktop \\ Laptop']||r['systemtype']||'', 
-                    sysModel: r['sysModel']||r['Model No']||r['sysmodel']||'', 
-                    sysSerial: r['sysSerial']||r['Serial Number']||r['sysserial']||'',
-                    processor: r['processor']||r['Processor']||'',
-                    ram: r['ram']||r['Ram']||r['RAM']||'',
-                    hdd: r['hdd']||r['Harddisk']||'',
-                    printerModel: r['printerModel']||r['Printer Model']||r['printermodel']||'',
-                    printerSerial: r['printerSerial']||r['Serial Number_1']||r['printerserial']||'',
-                    upsModel: r['upsModel']||r['UPS Model']||r['upsmodel']||'',
-                    upsSerial: r['upsSerial']||r['Serial Number_2']||r['upsserial']||'',
-                    xeroxModel: r['xeroxModel']||r['Xerox Model']||r['xeroxmodel']||'',
-                    xeroxSerial: r['xeroxSerial']||r['Serial Number_3']||r['xeroxserial']||''
+                    userName: r['userName']||r['User Name']||r['username']||'', location: r['location']||r['Location']||'', department: r['department']||r['Department']||'',
+                    systemType: r['systemType']||r['System Type']||r['Desktop \\ Laptop']||r['systemtype']||'', sysModel: r['sysModel']||r['Model No']||r['sysmodel']||'', sysSerial: r['sysSerial']||r['Serial Number']||r['sysserial']||'',
+                    processor: r['processor']||r['Processor']||'', ram: r['ram']||r['Ram']||r['RAM']||'', hdd: r['hdd']||r['Harddisk']||'',
+                    printerModel: r['printerModel']||r['Printer Model']||r['printermodel']||'', printerSerial: r['printerSerial']||r['Serial Number_1']||r['printerserial']||'',
+                    upsModel: r['upsModel']||r['UPS Model']||r['upsmodel']||'', upsSerial: r['upsSerial']||r['Serial Number_2']||r['upsserial']||'',
+                    xeroxModel: r['xeroxModel']||r['Xerox Model']||r['xeroxmodel']||'', xeroxSerial: r['xeroxSerial']||r['Serial Number_3']||r['xeroxserial']||''
                 }));
-                
                 if (isCloudConnected) await supabaseClient.from('it_assets').insert(mapped);
                 else { itDataList = itDataList.concat(mapped.map(x=>({...x, id: Date.now()+Math.random()}))); localStorage.setItem('itAssetData', JSON.stringify(itDataList)); }
                 await loadItData(); document.getElementById('itImportFile').value = ''; alert('IT Data Imported successfully!');
@@ -1268,31 +940,16 @@
             const data = new Uint8Array(e.target.result); 
             const wb = XLSX.read(data, {type: 'array', cellDates: true, dateNF: 'dd-mm-yyyy'});
             const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-            
             if (raw.length > 0) {
                 const mapped = raw.map(r => ({
-                    empId: r['empId']||r['EMP ID']||'', 
-                    empName: r['empName']||r['EMPLOYEE NAME']||'', 
-                    designation: r['designation']||r['NEW DESIGNATION']||'',
-                    department: r['department']||r['DEPARTMENT']||'', 
-                    division: r['division']||r['DIVISION']||'', 
-                    doj: formatExcelDate(r['doj']||r['DATE OF JOINING']||r['ATE OF JOIN']), 
-                    dol: formatExcelDate(r['dol']||r['DATE OF LEAVING']||r['DATE OF LEAVIN']), 
-                    institution: r['institution']||r['INSTUTION']||'', 
-                    bankAcc: r['bankAcc']||r['BANK ACCOUNT NO']||r['BANK ACCOUNT N']||'', 
-                    ifsc: r['ifsc']||r['IFSC']||'', 
-                    remark: r['remark']||r['REMARK']||''
+                    empId: r['empId']||r['EMP ID']||'', empName: r['empName']||r['EMPLOYEE NAME']||'', designation: r['designation']||r['NEW DESIGNATION']||'',
+                    department: r['department']||r['DEPARTMENT']||'', division: r['division']||r['DIVISION']||'', 
+                    doj: formatExcelDate(r['doj']||r['DATE OF JOINING']||r['ATE OF JOIN']), dol: formatExcelDate(r['dol']||r['DATE OF LEAVING']||r['DATE OF LEAVIN']), 
+                    institution: r['institution']||r['INSTUTION']||'', bankAcc: r['bankAcc']||r['BANK ACCOUNT NO']||r['BANK ACCOUNT N']||'', ifsc: r['ifsc']||r['IFSC']||'', remark: r['remark']||r['REMARK']||''
                 }));
-                
                 if (isCloudConnected) await supabaseClient.from('employee_data').insert(mapped);
-                else { 
-                    empDataList = empDataList.concat(mapped.map(x=>({...x, id: Date.now()+Math.random()}))); 
-                    localStorage.setItem('empData', JSON.stringify(empDataList)); 
-                }
-                
-                await loadEmpData(); 
-                document.getElementById('empImportFile').value = ''; 
-                alert('HR Employee Data imported successfully!');
+                else { empDataList = empDataList.concat(mapped.map(x=>({...x, id: Date.now()+Math.random()}))); localStorage.setItem('empData', JSON.stringify(empDataList)); }
+                await loadEmpData(); document.getElementById('empImportFile').value = ''; alert('HR Employee Data imported successfully!');
             }
         }; reader.readAsArrayBuffer(file);
     });
