@@ -35,13 +35,22 @@
         h2.app-title { text-align: center; color: #1a73e8; margin-top: 0; margin-bottom: 20px; }
 
         /* --- DASHBOARD STYLES --- */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .dash-card { background-color: #fff; border: 1px solid #e0e0e0; border-left: 5px solid #1a73e8; border-radius: 6px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .dash-card:nth-child(2) { border-left-color: #28a745; }
-        .dash-card:nth-child(3) { border-left-color: #ffc107; }
-        .dash-card:nth-child(4) { border-left-color: #17a2b8; }
-        .dash-title { font-size: 14px; color: #6c757d; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-        .dash-value { font-size: 28px; font-weight: bold; color: #343a40; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .dash-card { background-color: #fff; border: 1px solid #e0e0e0; border-left: 5px solid #1a73e8; border-radius: 6px; padding: 20px 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .dash-card:nth-child(2) { border-left-color: #28a745; } 
+        .dash-card:nth-child(3) { border-left-color: #ffc107; } 
+        .dash-card:nth-child(4) { border-left-color: #fd7e14; } 
+        .dash-card:nth-child(5) { border-left-color: #6f42c1; } 
+        .dash-card:nth-child(6) { border-left-color: #e83e8c; } /* Pink for UPS */
+        .dash-card:nth-child(7) { border-left-color: #17a2b8; } /* Cyan for Departments */
+        
+        .dash-card.clickable { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .dash-card.clickable:hover { transform: translateY(-4px); box-shadow: 0 6px 15px rgba(0,0,0,0.12); }
+        .dash-card:active { transform: translateY(0px); }
+        
+        .dash-title { font-size: 13px; color: #6c757d; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; text-align: center;}
+        .dash-value { font-size: 26px; font-weight: bold; color: #343a40; }
         
         /* --- FORM STYLES --- */
         .form-section { background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; margin-bottom: 20px; }
@@ -144,15 +153,34 @@
             <h2 class="app-title">IT Asset Management Database</h2>
 
             <div class="dashboard-grid">
-                <div class="dash-card"><div class="dash-title">Total Assets</div><div class="dash-value" id="itTotal">0</div></div>
-                <div class="dash-card"><div class="dash-title">Desktops</div><div class="dash-value" id="itDesktops">0</div></div>
-                <div class="dash-card"><div class="dash-title">Laptops</div><div class="dash-value" id="itLaptops">0</div></div>
-                <div class="dash-card"><div class="dash-title">Departments</div><div class="dash-value" id="itDepts">0</div></div>
+                <div class="dash-card clickable" onclick="filterItTable('all')" title="Click to View All Assets">
+                    <div class="dash-title">Total Assets</div><div class="dash-value" id="itTotal">0</div>
+                </div>
+                <div class="dash-card clickable" onclick="filterItTable('desktop')" title="Click to View Desktops">
+                    <div class="dash-title">Desktops</div><div class="dash-value" id="itDesktops">0</div>
+                </div>
+                <div class="dash-card clickable" onclick="filterItTable('laptop')" title="Click to View Laptops">
+                    <div class="dash-title">Laptops</div><div class="dash-value" id="itLaptops">0</div>
+                </div>
+                <div class="dash-card clickable" onclick="filterItTable('printer')" title="Click to View Printers">
+                    <div class="dash-title">Printers</div><div class="dash-value" id="itPrinters">0</div>
+                </div>
+                <div class="dash-card clickable" onclick="filterItTable('xerox')" title="Click to View Xerox Machines">
+                    <div class="dash-title">Xerox</div><div class="dash-value" id="itXerox">0</div>
+                </div>
+                <!-- NEW UPS DASHBOARD CARD -->
+                <div class="dash-card clickable" onclick="filterItTable('ups')" title="Click to View UPS">
+                    <div class="dash-title">UPS</div><div class="dash-value" id="itUps">0</div>
+                </div>
+                <div class="dash-card">
+                    <div class="dash-title">Departments</div><div class="dash-value" id="itDepts">0</div>
+                </div>
             </div>
             
             <div class="form-section admin-only" id="itFormSection">
                 <form id="itForm">
                     <div class="form-grid">
+                        <div class="form-group"><label>EMP ID</label><input type="text" id="itEmpId" required></div>
                         <div class="form-group"><label>User Name</label><input type="text" id="userName" required></div>
                         <div class="form-group"><label>Location</label><input type="text" id="location" required></div>
                         <div class="form-group"><label>Department</label><input type="text" id="department" required></div>
@@ -191,7 +219,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th><th>User Name</th><th>Location</th><th>Department</th><th>System Type</th><th>Model No</th>
+                            <th>SR. NO</th><th>EMP ID</th><th>User Name</th><th>Location</th><th>Department</th><th>System Type</th><th>Model No</th>
                             <th>Serial Number</th><th>Processor</th><th>RAM</th><th>Harddisk</th><th>Printer Model</th>
                             <th>Printer Serial</th><th>UPS Model</th><th>UPS Serial</th><th>Xerox Model</th><th>Xerox Serial</th>
                             <th class="action-col admin-only" id="itActionsHeader">Actions</th> 
@@ -293,20 +321,27 @@
     const setVal = (id, val) => document.getElementById(id).value = val || '';
 
     // ==========================================
-    // DATE FORMATTER UTILITY
+    // HELPERS
     // ==========================================
-    // This fixes the issue with Excel dates importing as 2020-09-19T18:29:50.000Z
     function formatExcelDate(dateVal) {
         if (!dateVal) return '';
-        // If SheetJS gives us a raw JavaScript Date object
         if (dateVal instanceof Date) {
             let day = ("0" + dateVal.getDate()).slice(-2);
             let month = ("0" + (dateVal.getMonth() + 1)).slice(-2);
             let year = dateVal.getFullYear();
             return `${day}-${month}-${year}`; 
         }
-        // If it's already a string, just return it
         return dateVal.toString();
+    }
+    
+    // SMART HARDWARE VALIDATOR
+    function hasValidHardwareData(val1, val2, val3, val4) {
+        const isValid = (v) => {
+            if (!v) return false;
+            const str = v.toString().toLowerCase().trim();
+            return str !== '' && str !== 'na' && str !== 'n/a' && str !== 'null' && str !== '-';
+        };
+        return isValid(val1) || isValid(val2) || isValid(val3) || isValid(val4);
     }
 
     // ==========================================
@@ -384,6 +419,7 @@
         } else {
             itDataList = JSON.parse(localStorage.getItem('itAssetData')) || [];
         }
+        updateItDashboardCounts();
         renderItTable();
     }
     
@@ -402,6 +438,7 @@
         const btn = document.getElementById('itSubmitBtn'); btn.disabled = true;
         
         const newData = {
+            empId: getVal('itEmpId'), 
             userName: getVal('userName'), location: getVal('location'), department: getVal('department'),
             systemType: getVal('systemType'), sysModel: getVal('sysModel'), sysSerial: getVal('sysSerial'),
             processor: getVal('processor'), ram: getVal('ram'), hdd: getVal('hdd'),
@@ -468,7 +505,6 @@
         loadEmpData();
     }
 
-    // --- CLEAR ALL LOGIC ---
     async function clearAllItData() {
         if (confirm('🚨 WARNING: Are you sure you want to permanently delete ALL IT Assets?')) {
             if (confirm('Final warning: Delete everything?')) {
@@ -501,12 +537,22 @@
 
     function editItData(id) {
         const data = itDataList.find(x => x.id === id); if(!data) return;
-        setVal('userName', data.userName); setVal('location', data.location); setVal('department', data.department);
-        setVal('systemType', data.systemType); setVal('sysModel', data.sysModel); setVal('sysSerial', data.sysSerial);
-        setVal('processor', data.processor); setVal('ram', data.ram); setVal('hdd', data.hdd);
-        setVal('printerModel', data.printerModel); setVal('printerSerial', data.printerSerial);
-        setVal('upsModel', data.upsModel); setVal('upsSerial', data.upsSerial);
-        setVal('xeroxModel', data.xeroxModel); setVal('xeroxSerial', data.xeroxSerial);
+        setVal('itEmpId', data.empId || data.empid); 
+        setVal('userName', data.userName || data.username); 
+        setVal('location', data.location); 
+        setVal('department', data.department);
+        setVal('systemType', data.systemType || data.systemtype); 
+        setVal('sysModel', data.sysModel || data.sysmodel); 
+        setVal('sysSerial', data.sysSerial || data.sysserial);
+        setVal('processor', data.processor); 
+        setVal('ram', data.ram); 
+        setVal('hdd', data.hdd);
+        setVal('printerModel', data.printerModel || data.printermodel); 
+        setVal('printerSerial', data.printerSerial || data.printerserial);
+        setVal('upsModel', data.upsModel || data.upsmodel); 
+        setVal('upsSerial', data.upsSerial || data.upsserial);
+        setVal('xeroxModel', data.xeroxModel || data.xeroxmodel); 
+        setVal('xeroxSerial', data.xeroxSerial || data.xeroxserial);
         itEditId = id; document.getElementById('itSubmitBtn').textContent = 'Update Record'; window.scrollTo(0, 0); 
     }
 
@@ -522,25 +568,83 @@
     // ==========================================
     // 5. RENDERING & DASHBOARDS
     // ==========================================
+    
+    function updateItDashboardCounts() {
+        let desktops = 0; let laptops = 0; let printers = 0; let xeroxes = 0; let upsCount = 0; let depts = new Set();
+        
+        itDataList.forEach(data => {
+            if(data.systemType?.toLowerCase().includes('desktop') || data.systemtype?.toLowerCase().includes('desktop')) desktops++;
+            if(data.systemType?.toLowerCase().includes('laptop') || data.systemtype?.toLowerCase().includes('laptop')) laptops++;
+            
+            if(hasValidHardwareData(data.printerModel, data.printermodel, data.printerSerial, data.printerserial)) printers++;
+            if(hasValidHardwareData(data.xeroxModel, data.xeroxmodel, data.xeroxSerial, data.xeroxserial)) xeroxes++;
+            if(hasValidHardwareData(data.upsModel, data.upsmodel, data.upsSerial, data.upsserial)) upsCount++;
+            
+            if(data.department) depts.add(data.department.toLowerCase());
+        });
+
+        document.getElementById('itTotal').innerText = itDataList.length; 
+        document.getElementById('itDesktops').innerText = desktops;
+        document.getElementById('itLaptops').innerText = laptops; 
+        document.getElementById('itPrinters').innerText = printers; 
+        document.getElementById('itXerox').innerText = xeroxes; 
+        document.getElementById('itUps').innerText = upsCount; 
+        document.getElementById('itDepts').innerText = depts.size;
+    }
+
+    function filterItTable(type) {
+        let filteredData = [];
+        const searchBox = document.getElementById('itSearch');
+        
+        if (type === 'all') {
+            filteredData = itDataList;
+            searchBox.value = '';
+        } else if (type === 'desktop') {
+            filteredData = itDataList.filter(data => data.systemType?.toLowerCase().includes('desktop') || data.systemtype?.toLowerCase().includes('desktop'));
+            searchBox.value = 'Filter: Desktops';
+        } else if (type === 'laptop') {
+            filteredData = itDataList.filter(data => data.systemType?.toLowerCase().includes('laptop') || data.systemtype?.toLowerCase().includes('laptop'));
+            searchBox.value = 'Filter: Laptops';
+        } else if (type === 'printer') {
+            filteredData = itDataList.filter(data => hasValidHardwareData(data.printerModel, data.printermodel, data.printerSerial, data.printerserial));
+            searchBox.value = 'Filter: Printers';
+        } else if (type === 'xerox') {
+            filteredData = itDataList.filter(data => hasValidHardwareData(data.xeroxModel, data.xeroxmodel, data.xeroxSerial, data.xeroxserial));
+            searchBox.value = 'Filter: Xerox Machines';
+        } else if (type === 'ups') {
+            filteredData = itDataList.filter(data => hasValidHardwareData(data.upsModel, data.upsmodel, data.upsSerial, data.upsserial));
+            searchBox.value = 'Filter: UPS';
+        }
+        
+        renderItTable(filteredData);
+    }
+
     function renderItTable(dataToRender = itDataList) {
         const tbody = document.getElementById('itTableBody'); tbody.innerHTML = ''; 
-        let desktops = 0; let laptops = 0; let depts = new Set();
         const isAdmin = sessionStorage.getItem('role') === 'admin';
 
         dataToRender.forEach((data, index) => {
-            if(data.systemType?.toLowerCase().includes('desktop')) desktops++;
-            if(data.systemType?.toLowerCase().includes('laptop')) laptops++;
-            if(data.department) depts.add(data.department.toLowerCase());
-
-            let row = `<tr><td>${index + 1}</td><td>${data.userName||''}</td><td>${data.location||''}</td><td>${data.department||''}</td>
-                <td>${data.systemType||''}</td><td>${data.sysModel||''}</td><td>${data.sysSerial||''}</td><td>${data.processor||''}</td>
-                <td>${data.ram||''}</td><td>${data.hdd||''}</td><td>${data.printerModel||''}</td><td>${data.printerSerial||''}</td>
-                <td>${data.upsModel||''}</td><td>${data.upsSerial||''}</td><td>${data.xeroxModel||''}</td><td>${data.xeroxSerial||''}</td>`;
+            let row = `<tr>
+                <td>${index + 1}</td>
+                <td>${data.empId||data.empid||''}</td>
+                <td>${data.userName||data.username||''}</td>
+                <td>${data.location||''}</td>
+                <td>${data.department||''}</td>
+                <td>${data.systemType||data.systemtype||''}</td>
+                <td>${data.sysModel||data.sysmodel||''}</td>
+                <td>${data.sysSerial||data.sysserial||''}</td>
+                <td>${data.processor||''}</td>
+                <td>${data.ram||''}</td>
+                <td>${data.hdd||''}</td>
+                <td>${data.printerModel||data.printermodel||''}</td>
+                <td>${data.printerSerial||data.printerserial||''}</td>
+                <td>${data.upsModel||data.upsmodel||''}</td>
+                <td>${data.upsSerial||data.upsserial||''}</td>
+                <td>${data.xeroxModel||data.xeroxmodel||''}</td>
+                <td>${data.xeroxSerial||data.xeroxserial||''}</td>`;
             if (isAdmin) row += `<td class="action-col"><button class="btn-edit" onclick="editItData(${data.id})">Edit</button><button class="btn-delete" onclick="deleteItData(${data.id})">Delete</button></td>`;
             row += '</tr>'; tbody.innerHTML += row;
         });
-        document.getElementById('itTotal').innerText = itDataList.length; document.getElementById('itDesktops').innerText = desktops;
-        document.getElementById('itLaptops').innerText = laptops; document.getElementById('itDepts').innerText = depts.size;
     }
 
     function renderEmpTable(dataToRender = empDataList) {
@@ -564,8 +668,10 @@
 
     document.getElementById('itSearch').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
+        if(term.startsWith('filter:')) return; 
         renderItTable(itDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term)));
     });
+    
     document.getElementById('empSearch').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         renderEmpTable(empDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term)));
@@ -575,18 +681,38 @@
     // 6. EXPORT / IMPORT
     // ==========================================
     function exportItExcel() {
-        const clean = itDataList.map(({ id, ...rest }) => rest);
+        const searchBox = document.getElementById('itSearch').value;
+        let dataToExport = itDataList;
+        
+        if (searchBox === 'Filter: Desktops') {
+            dataToExport = itDataList.filter(data => data.systemType?.toLowerCase().includes('desktop') || data.systemtype?.toLowerCase().includes('desktop'));
+        } else if (searchBox === 'Filter: Laptops') {
+            dataToExport = itDataList.filter(data => data.systemType?.toLowerCase().includes('laptop') || data.systemtype?.toLowerCase().includes('laptop'));
+        } else if (searchBox === 'Filter: Printers') {
+            dataToExport = itDataList.filter(data => hasValidHardwareData(data.printerModel, data.printermodel, data.printerSerial, data.printerserial));
+        } else if (searchBox === 'Filter: Xerox Machines') {
+            dataToExport = itDataList.filter(data => hasValidHardwareData(data.xeroxModel, data.xeroxmodel, data.xeroxSerial, data.xeroxserial));
+        } else if (searchBox === 'Filter: UPS') {
+            dataToExport = itDataList.filter(data => hasValidHardwareData(data.upsModel, data.upsmodel, data.upsSerial, data.upsserial));
+        } else if (searchBox && !searchBox.startsWith('Filter:')) {
+            const term = searchBox.toLowerCase();
+            dataToExport = itDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term));
+        }
+
+        const clean = dataToExport.map(({ id, ...rest }) => rest);
         const ws = XLSX.utils.json_to_sheet(clean); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "IT_Assets"); XLSX.writeFile(wb, "IT_Inventory.xlsx");
     }
     
     function exportEmpExcel() {
-        const clean = empDataList.map(({ id, ...rest }) => rest);
+        const term = document.getElementById('empSearch').value.toLowerCase();
+        let dataToExport = term ? empDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term)) : empDataList;
+        
+        const clean = dataToExport.map(({ id, ...rest }) => rest);
         const ws = XLSX.utils.json_to_sheet(clean); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Employee_Data"); XLSX.writeFile(wb, "Employee_Directory.xlsx");
     }
 
-    // IT Import
     document.getElementById('itImportFile').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
@@ -595,23 +721,36 @@
             const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
             if (raw.length > 0) {
                 const mapped = raw.map(r => ({
-                    userName: r['userName']||r['User Name']||'', location: r['location']||r['Location']||'', department: r['department']||r['Department']||'',
-                    systemType: r['systemType']||r['System Type']||'', sysModel: r['sysModel']||r['Model No']||'', sysSerial: r['sysSerial']||r['Serial Number']||''
+                    empId: r['empId']||r['EMP ID']||r['empid']||'', 
+                    userName: r['userName']||r['User Name']||r['username']||'', 
+                    location: r['location']||r['Location']||'', 
+                    department: r['department']||r['Department']||'',
+                    systemType: r['systemType']||r['System Type']||r['Desktop \\ Laptop']||r['systemtype']||'', 
+                    sysModel: r['sysModel']||r['Model No']||r['sysmodel']||'', 
+                    sysSerial: r['sysSerial']||r['Serial Number']||r['sysserial']||'',
+                    processor: r['processor']||r['Processor']||'',
+                    ram: r['ram']||r['Ram']||r['RAM']||'',
+                    hdd: r['hdd']||r['Harddisk']||'',
+                    printerModel: r['printerModel']||r['Printer Model']||r['printermodel']||'',
+                    printerSerial: r['printerSerial']||r['Serial Number_1']||r['printerserial']||'',
+                    upsModel: r['upsModel']||r['UPS Model']||r['upsmodel']||'',
+                    upsSerial: r['upsSerial']||r['Serial Number_2']||r['upsserial']||'',
+                    xeroxModel: r['xeroxModel']||r['Xerox Model']||r['xeroxmodel']||'',
+                    xeroxSerial: r['xeroxSerial']||r['Serial Number_3']||r['xeroxserial']||''
                 }));
+                
                 if (isCloudConnected) await supabaseClient.from('it_assets').insert(mapped);
                 else { itDataList = itDataList.concat(mapped.map(x=>({...x, id: Date.now()+Math.random()}))); localStorage.setItem('itAssetData', JSON.stringify(itDataList)); }
-                await loadItData(); document.getElementById('itImportFile').value = ''; alert('Imported!');
+                await loadItData(); document.getElementById('itImportFile').value = ''; alert('IT Data Imported successfully!');
             }
         }; reader.readAsArrayBuffer(file);
     });
 
-    // EMP Import - With Date Formatting Fix applied!
     document.getElementById('empImportFile').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = async function(e) {
             const data = new Uint8Array(e.target.result); 
-            // Setting cellDates true ensures Excel dates are read correctly
             const wb = XLSX.read(data, {type: 'array', cellDates: true, dateNF: 'dd-mm-yyyy'});
             const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
             
@@ -622,7 +761,6 @@
                     designation: r['designation']||r['NEW DESIGNATION']||'',
                     department: r['department']||r['DEPARTMENT']||'', 
                     division: r['division']||r['DIVISION']||'', 
-                    // Automatically pass through our new date formatter function
                     doj: formatExcelDate(r['doj']||r['DATE OF JOINING']||r['ATE OF JOIN']), 
                     dol: formatExcelDate(r['dol']||r['DATE OF LEAVING']||r['DATE OF LEAVIN']), 
                     institution: r['institution']||r['INSTUTION']||'', 
