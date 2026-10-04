@@ -62,6 +62,10 @@
         .btn-print:hover { background-color: #5a6268; }
         .btn-logout { background-color: #ef4444; }
         .btn-logout:hover { background-color: #dc2626; }
+        
+        /* New Red Button for Clear All */
+        .btn-danger { background-color: #dc3545; margin-right: 5px;}
+        .btn-danger:hover { background-color: #b02a37; }
 
         /* --- ACTION BAR --- */
         .action-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ced4da; }
@@ -80,7 +84,7 @@
         .admin-only { display: none; }
         
         /* Loading overlay for table */
-        #loadingOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #1a73e8;}
+        #loadingOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #1a73e8; z-index: 10;}
 
         /* --- PRINT STYLES --- */
         @media print {
@@ -115,13 +119,13 @@
             </form>
             <p id="loginError" style="color: #ef4444; font-size: 13px; display: none; margin-top: 15px; font-weight: bold;">Invalid Username or Password!</p>
             
-            <!-- <div class="credentials-hint">
+            <div class="credentials-hint">
                 <div style="margin-bottom: 5px;"><strong>Admin Access (Full Control):</strong></div>
                 <div>User: <code>admin</code> | Pass: <code>admin123</code></div>
                 <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 10px 0;">
                 <div style="margin-bottom: 5px;"><strong>Staff Access (View & Print Only):</strong></div>
                 <div>User: <code>user</code> | Pass: <code>user123</code></div>
-            </div> -->
+            </div>
         </div>
     </div>
 
@@ -181,6 +185,9 @@
                     <input type="file" id="importFile" accept=".xlsx, .xls, .csv">
                 </div>
                 <div>
+                    <!-- Clear All Button (Admin Only) -->
+                    <button type="button" class="btn-danger admin-only" id="clearAllBtn" onclick="clearAllData()">🗑️ Clear All</button>
+                    
                     <button type="button" class="btn-print" onclick="window.print()">🖨️ Print Data</button>
                     <button type="button" class="btn-export" onclick="exportToExcel()">📥 Export to Excel</button>
                 </div>
@@ -233,15 +240,19 @@
     // ==========================================
     // 2. DOM & STATE VARIABLES
     // ==========================================
-    let dataList = []; // Holds the cloud data locally for fast searching
-    let editId = null; // Tracks the Database ID we are editing (instead of array index)
+    let dataList = []; 
+    let editId = null; 
 
     const loginScreen = document.getElementById('loginScreen');
     const mainApp = document.getElementById('mainApp');
     const roleBadge = document.getElementById('roleBadge');
+    
+    // Admin specific elements
     const formSection = document.getElementById('formSection');
     const importSection = document.getElementById('importSection');
+    const clearAllBtn = document.getElementById('clearAllBtn');
     const actionsHeader = document.getElementById('actionsHeader');
+    
     const dataForm = document.getElementById('dataForm');
     const submitBtn = document.getElementById('submitBtn');
     const searchInput = document.getElementById('searchInput');
@@ -290,16 +301,18 @@
             roleBadge.style.backgroundColor = '#28a745';
             formSection.style.display = 'block';
             importSection.style.display = 'flex';
+            clearAllBtn.style.display = 'inline-block';
             actionsHeader.style.display = 'table-cell';
         } else {
             roleBadge.innerText = 'USER ACCOUNT (VIEW ONLY)';
             roleBadge.style.backgroundColor = '#6c757d';
             formSection.style.display = 'none';
             importSection.style.display = 'none';
+            clearAllBtn.style.display = 'none';
             actionsHeader.style.display = 'none';
         }
         
-        fetchDataFromCloud(); // Fetch data when logged in
+        fetchDataFromCloud(); 
     }
 
     function logout() {
@@ -314,26 +327,24 @@
     // 4. CLOUD DATABASE LOGIC (SUPABASE)
     // ==========================================
     
-    // Fetch all data from Supabase
     async function fetchDataFromCloud() {
         loadingOverlay.style.display = 'flex';
         
         const { data, error } = await supabaseClient
             .from('it_assets')
             .select('*')
-            .order('id', { ascending: true }); // Sort by ID
+            .order('id', { ascending: true });
 
         if (error) {
             alert("Error connecting to database. Did you add your Supabase URL & Key in the code?");
             console.error(error);
         } else {
-            dataList = data; // Save to local state
+            dataList = data;
             renderTable();
         }
         loadingOverlay.style.display = 'none';
     }
 
-    // Handle Add/Update Form Submission
     dataForm.addEventListener('submit', async function(e) {
         e.preventDefault(); 
         submitBtn.disabled = true;
@@ -349,11 +360,9 @@
         };
 
         if (editId === null) {
-            // INSERT NEW RECORD
             const { error } = await supabaseClient.from('it_assets').insert([newData]);
             if (error) alert("Error adding data: " + error.message);
         } else {
-            // UPDATE EXISTING RECORD
             const { error } = await supabaseClient.from('it_assets').update(newData).eq('id', editId);
             if (error) alert("Error updating data: " + error.message);
             
@@ -365,11 +374,9 @@
         submitBtn.disabled = false;
         dataForm.reset(); 
         
-        // Refresh table from cloud
         await fetchDataFromCloud();
     });
 
-    // Delete Record
     async function deleteData(dbId) {
         if (confirm('Are you sure you want to delete this asset record permanently from the cloud?')) {
             loadingOverlay.style.display = 'flex';
@@ -379,19 +386,45 @@
             await fetchDataFromCloud();
         }
     }
+    
+    // --- NEW: CLEAR ALL FUNCTION ---
+    async function clearAllData() {
+        if (confirm('🚨 WARNING: Are you absolutely sure you want to permanently delete ALL data? This action cannot be undone!')) {
+            // Second confirmation just to be safe
+            if (confirm('Final warning: Delete everything?')) {
+                loadingOverlay.style.display = 'flex';
+                // Supabase requires a filter for deletes. Deleting where id > 0 deletes everything.
+                const { error } = await supabaseClient.from('it_assets').delete().gt('id', 0);
+                
+                if(error) {
+                    alert("Error clearing data: " + error.message);
+                } else {
+                    alert("All data has been successfully cleared.");
+                }
+                await fetchDataFromCloud();
+            }
+        }
+    }
 
-    // Prepare form for editing
     function editData(dbId) {
-        // Find the record in our local array based on its database ID
         const data = dataList.find(item => item.id === dbId);
         if(!data) return;
 
-        setVal('userName', data.userName); setVal('location', data.location); setVal('department', data.department);
-        setVal('systemType', data.systemType); setVal('sysModel', data.sysModel); setVal('sysSerial', data.sysSerial);
-        setVal('processor', data.processor); setVal('ram', data.ram); setVal('hdd', data.hdd);
-        setVal('printerModel', data.printerModel); setVal('printerSerial', data.printerSerial);
-        setVal('upsModel', data.upsModel); setVal('upsSerial', data.upsSerial);
-        setVal('xeroxModel', data.xeroxModel); setVal('xeroxSerial', data.xeroxSerial);
+        setVal('userName', data.userName || data.username); 
+        setVal('location', data.location); 
+        setVal('department', data.department);
+        setVal('systemType', data.systemType || data.systemtype); 
+        setVal('sysModel', data.sysModel || data.sysmodel); 
+        setVal('sysSerial', data.sysSerial || data.sysserial);
+        setVal('processor', data.processor); 
+        setVal('ram', data.ram); 
+        setVal('hdd', data.hdd);
+        setVal('printerModel', data.printerModel || data.printermodel); 
+        setVal('printerSerial', data.printerSerial || data.printerserial);
+        setVal('upsModel', data.upsModel || data.upsmodel); 
+        setVal('upsSerial', data.upsSerial || data.upsserial);
+        setVal('xeroxModel', data.xeroxModel || data.xeroxmodel); 
+        setVal('xeroxSerial', data.xeroxSerial || data.xeroxserial);
         
         editId = dbId;
         submitBtn.textContent = 'Update Cloud Record';
@@ -404,13 +437,34 @@
     // ==========================================
 
     function updateDashboard() {
-        let desktops = 0; let laptops = 0; let departments = new Set(); 
+        let desktops = 0; 
+        let laptops = 0; 
+        let departments = new Set(); 
+
         dataList.forEach(item => {
-            let sysType = (item.systemType || '').toString().toLowerCase().trim();
-            if (sysType === 'desktop') desktops++;
-            if (sysType === 'laptop') laptops++;
-            if (item.department) departments.add(item.department.toString().toLowerCase().trim());
+            let isDesktop = false;
+            let isLaptop = false;
+            let foundDept = '';
+
+            // This loops through EVERY single column in your database to ensure nothing is missed
+            for (let key in item) {
+                if (item[key]) {
+                    let valStr = item[key].toString().toLowerCase().trim();
+                    
+                    if (valStr.includes('desktop')) isDesktop = true;
+                    if (valStr.includes('laptop')) isLaptop = true;
+
+                    if (key.toLowerCase().includes('department')) {
+                        foundDept = valStr;
+                    }
+                }
+            }
+
+            if (isDesktop) desktops++;
+            if (isLaptop) laptops++;
+            if (foundDept) departments.add(foundDept);
         });
+
         document.getElementById('dashTotal').innerText = dataList.length;
         document.getElementById('dashDesktops').innerText = desktops;
         document.getElementById('dashLaptops').innerText = laptops;
@@ -427,25 +481,24 @@
             
             let rowHTML = `
                 <td>${index + 1}</td>
-                <td>${data.userName || ''}</td>
+                <td>${data.userName || data.username || ''}</td>
                 <td>${data.location || ''}</td>
                 <td>${data.department || ''}</td>
-                <td>${data.systemType || ''}</td>
-                <td>${data.sysModel || ''}</td>
-                <td>${data.sysSerial || ''}</td>
+                <td>${data.systemType || data.systemtype || ''}</td>
+                <td>${data.sysModel || data.sysmodel || ''}</td>
+                <td>${data.sysSerial || data.sysserial || ''}</td>
                 <td>${data.processor || ''}</td>
                 <td>${data.ram || ''}</td>
                 <td>${data.hdd || ''}</td>
-                <td>${data.printerModel || ''}</td>
-                <td>${data.printerSerial || ''}</td>
-                <td>${data.upsModel || ''}</td>
-                <td>${data.upsSerial || ''}</td>
-                <td>${data.xeroxModel || ''}</td>
-                <td>${data.xeroxSerial || ''}</td>
+                <td>${data.printerModel || data.printermodel || ''}</td>
+                <td>${data.printerSerial || data.printerserial || ''}</td>
+                <td>${data.upsModel || data.upsmodel || ''}</td>
+                <td>${data.upsSerial || data.upsserial || ''}</td>
+                <td>${data.xeroxModel || data.xeroxmodel || ''}</td>
+                <td>${data.xeroxSerial || data.xeroxserial || ''}</td>
             `;
 
             if (currentRole === 'admin') {
-                // Pass the Database ID (data.id) to the edit/delete functions
                 rowHTML += `
                     <td class="action-col">
                         <button class="btn-edit" onclick="editData(${data.id})">Edit</button>
@@ -462,11 +515,15 @@
     searchInput.addEventListener('input', function(e) {
         const searchTerm = e.target.value.toLowerCase();
         const filteredData = dataList.filter(item => {
-            return (item.userName || '').toLowerCase().includes(searchTerm) ||
-                   (item.sysSerial || '').toLowerCase().includes(searchTerm) ||
-                   (item.printerSerial || '').toLowerCase().includes(searchTerm) ||
-                   (item.upsSerial || '').toLowerCase().includes(searchTerm) ||
-                   (item.xeroxSerial || '').toLowerCase().includes(searchTerm);
+            const userStr = (item.userName || item.username || '').toLowerCase();
+            const sysSerStr = (item.sysSerial || item.sysserial || '').toLowerCase();
+            const printSerStr = (item.printerSerial || item.printerserial || '').toLowerCase();
+            const upsSerStr = (item.upsSerial || item.upsserial || '').toLowerCase();
+            const xeroxSerStr = (item.xeroxSerial || item.xeroxserial || '').toLowerCase();
+
+            return userStr.includes(searchTerm) || sysSerStr.includes(searchTerm) || 
+                   printSerStr.includes(searchTerm) || upsSerStr.includes(searchTerm) || 
+                   xeroxSerStr.includes(searchTerm);
         });
         renderTable(filteredData);
     });
@@ -481,16 +538,13 @@
 
         if(currentSearch) {
             dataToExport = dataList.filter(item => {
-                return (item.userName || '').toLowerCase().includes(currentSearch) ||
-                       (item.sysSerial || '').toLowerCase().includes(currentSearch) ||
-                       (item.printerSerial || '').toLowerCase().includes(currentSearch) ||
-                       (item.upsSerial || '').toLowerCase().includes(currentSearch) ||
-                       (item.xeroxSerial || '').toLowerCase().includes(currentSearch);
+                const userStr = (item.userName || item.username || '').toLowerCase();
+                const sysSerStr = (item.sysSerial || item.sysserial || '').toLowerCase();
+                return userStr.includes(currentSearch) || sysSerStr.includes(currentSearch);
             });
         }
         if(dataToExport.length === 0) { alert("No data to export!"); return; }
 
-        // Remove the database ID column before exporting so it looks clean
         const cleanExport = dataToExport.map(({ id, ...rest }) => rest);
         const worksheet = XLSX.utils.json_to_sheet(cleanExport);
         const workbook = XLSX.utils.book_new();
@@ -513,26 +567,25 @@
                 if (rawImportedData.length > 0) {
                     const mappedData = rawImportedData.map(row => {
                         return {
-                            userName: row['userName'] || row['User Name'] || '',
+                            userName: row['userName'] || row['User Name'] || row['username'] || '',
                             location: row['location'] || row['Location'] || '',
                             department: row['department'] || row['Department'] || '',
-                            systemType: row['systemType'] || row['System Type'] || row['Desktop \\ Laptop'] || '',
-                            sysModel: row['sysModel'] || row['Model No'] || '',
-                            sysSerial: row['sysSerial'] || row['Serial Number'] || '',
+                            systemType: row['systemType'] || row['System Type'] || row['Desktop \\ Laptop'] || row['systemtype'] || '',
+                            sysModel: row['sysModel'] || row['Model No'] || row['sysmodel'] || '',
+                            sysSerial: row['sysSerial'] || row['Serial Number'] || row['sysserial'] || '',
                             processor: row['processor'] || row['Processor'] || '',
                             ram: row['ram'] || row['Ram'] || row['RAM'] || '',
                             hdd: row['hdd'] || row['Harddisk'] || '',
-                            printerModel: row['printerModel'] || row['Printer Model'] || '',
-                            printerSerial: row['printerSerial'] || row['Serial Number_1'] || '',
-                            upsModel: row['upsModel'] || row['UPS Model'] || '',
-                            upsSerial: row['upsSerial'] || row['Serial Number_2'] || '',
-                            xeroxModel: row['xeroxModel'] || row['Xerox Model'] || '',
-                            xeroxSerial: row['xeroxSerial'] || row['Serial Number_3'] || ''
+                            printerModel: row['printerModel'] || row['Printer Model'] || row['printermodel'] || '',
+                            printerSerial: row['printerSerial'] || row['Serial Number_1'] || row['printerserial'] || '',
+                            upsModel: row['upsModel'] || row['UPS Model'] || row['upsmodel'] || '',
+                            upsSerial: row['upsSerial'] || row['Serial Number_2'] || row['upsserial'] || '',
+                            xeroxModel: row['xeroxModel'] || row['Xerox Model'] || row['xeroxmodel'] || '',
+                            xeroxSerial: row['xeroxSerial'] || row['Serial Number_3'] || row['xeroxserial'] || ''
                         };
                     });
 
                     loadingOverlay.style.display = 'flex';
-                    // Bulk insert array of objects into Supabase
                     const { error } = await supabaseClient.from('it_assets').insert(mappedData);
                     
                     if (error) {
@@ -540,7 +593,7 @@
                     } else {
                         alert(mappedData.length + ' records imported to the cloud successfully!');
                         document.getElementById('importFile').value = '';
-                        await fetchDataFromCloud(); // Refresh table
+                        await fetchDataFromCloud(); 
                     }
                 }
             } catch (error) {
