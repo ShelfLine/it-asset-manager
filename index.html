@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Asset Manager (Cloud Edition)</title>
+    <title>IT & HR Asset Manager</title>
     <!-- SheetJS Library for Excel Import/Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Supabase JS Library -->
@@ -25,10 +25,12 @@
         .login-box button:hover { background-color: #2563eb; }
         .credentials-hint { margin-top: 20px; padding: 15px; background-color: #f1f5f9; border-radius: 6px; font-size: 12px; color: #475569; text-align: left; }
         .credentials-hint strong { color: #1e293b; }
+        .credentials-hint hr { border: 0; border-top: 1px solid #cbd5e1; margin: 10px 0; }
 
         /* --- MAIN APP STYLES --- */
         .main-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 25px; background-color: #1e293b; color: white; }
         .user-badge { background-color: #3b82f6; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-left: 10px;}
+        .network-badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; margin-left: 10px; background-color: #f59e0b; color: white;}
         .app-container { max-width: 98%; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         h2.app-title { text-align: center; color: #1a73e8; margin-top: 0; margin-bottom: 20px; }
 
@@ -50,29 +52,22 @@
         .submit-container { text-align: center; margin-top: 20px; }
         
         button { padding: 10px 20px; border: none; color: white; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 14px; transition: background-color 0.2s; }
-        #submitBtn { background-color: #1a73e8; font-size: 16px; padding: 12px 30px; }
-        #submitBtn:hover { background-color: #1557b0; }
-        #submitBtn:disabled { background-color: #a0c1f2; cursor: not-allowed; }
-        
+        .btn-primary { background-color: #1a73e8; font-size: 16px; padding: 12px 30px; }
+        .btn-primary:hover { background-color: #1557b0; }
         .btn-edit { background-color: #ffc107; color: black; margin-right: 5px; margin-bottom: 5px;}
         .btn-edit:hover { background-color: #e0a800; }
-        .btn-delete { background-color: #dc3545; }
-        .btn-delete:hover { background-color: #c82333; }
+        .btn-delete, .btn-danger { background-color: #dc3545; margin-right: 5px;}
+        .btn-delete:hover, .btn-danger:hover { background-color: #c82333; }
         .btn-print { background-color: #6c757d; }
         .btn-print:hover { background-color: #5a6268; }
-        .btn-logout { background-color: #ef4444; }
-        .btn-logout:hover { background-color: #dc2626; }
-        
-        /* New Red Button for Clear All */
-        .btn-danger { background-color: #dc3545; margin-right: 5px;}
-        .btn-danger:hover { background-color: #b02a37; }
+        .btn-export { background-color: #28a745; }
+        .btn-export:hover { background-color: #218838; }
 
         /* --- ACTION BAR --- */
         .action-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ced4da; }
         .search-section input { padding: 10px; width: 300px; border: 1px solid #bbb; border-radius: 4px; font-size: 14px; }
-        .import-section { display: flex; align-items: center; gap: 10px; }
-        .btn-export { background-color: #28a745; }
-        .btn-export:hover { background-color: #218838; }
+        .import-section { display: flex; align-items: center; gap: 10px; background: #fff; padding: 5px 15px; border-radius: 6px; border: 1px solid #ccc; }
+        .import-section input[type="file"] { font-size: 12px; }
 
         /* --- TABLE STYLES --- */
         .table-responsive { overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; position: relative;}
@@ -81,9 +76,9 @@
         th { background-color: #343a40; color: white; white-space: nowrap; }
         tr:nth-child(even) { background-color: #f9f9f9; }
         tr:hover { background-color: #f1f1f1; }
+        
         .admin-only { display: none; }
         
-        /* Loading overlay for table */
         #loadingOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #1a73e8; z-index: 10;}
 
         /* --- PRINT STYLES --- */
@@ -104,56 +99,59 @@
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <h2>Welcome Back</h2>
-            <div class="login-subtitle">Sign in to IT Asset Manager (Cloud)</div>
+            <div class="login-subtitle">Sign in to Enterprise Manager</div>
             
             <form id="loginForm">
                 <div class="input-group">
-                    <label for="loginUser">Username</label>
-                    <input type="text" id="loginUser" placeholder="Enter username" required>
+                    <label>Username</label>
+                    <input type="text" id="loginUser" required>
                 </div>
                 <div class="input-group">
-                    <label for="loginPass">Password</label>
-                    <input type="password" id="loginPass" placeholder="Enter password" required>
+                    <label>Password</label>
+                    <input type="password" id="loginPass" required>
                 </div>
-                <button type="submit" id="loginBtn">Secure Login</button>
+                <button type="submit">Secure Login</button>
             </form>
             <p id="loginError" style="color: #ef4444; font-size: 13px; display: none; margin-top: 15px; font-weight: bold;">Invalid Username or Password!</p>
             
-            <!-- <div class="credentials-hint">
-                <div style="margin-bottom: 5px;"><strong>Admin Access (Full Control):</strong></div>
+            <div class="credentials-hint">
+                <div style="margin-bottom: 5px;"><strong>IT Admin (IT Assets):</strong></div>
                 <div>User: <code>admin</code> | Pass: <code>admin123</code></div>
-                <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 10px 0;">
-                <div style="margin-bottom: 5px;"><strong>Staff Access (View & Print Only):</strong></div>
+                <hr>
+                <div style="margin-bottom: 5px;"><strong>IT Staff (View IT Assets):</strong></div>
                 <div>User: <code>user</code> | Pass: <code>user123</code></div>
-            </div> -->
+                <hr>
+                <div style="margin-bottom: 5px;"><strong>HR Employee (Employee Data):</strong></div>
+                <div>User: <code>emp</code> | Pass: <code>emp123</code></div>
+            </div>
         </div>
     </div>
 
-    <!-- ================= MAIN APP ================= -->
+    <!-- ================= MAIN APP WRAPPER ================= -->
     <div id="mainApp" style="display: none;">
         
         <div class="main-header">
             <div>
-                <strong>IT Asset Manager</strong> 
-                <span id="roleBadge" class="user-badge">ADMIN</span>
+                <strong>Enterprise Manager</strong> 
+                <span id="roleBadge" class="user-badge"></span>
+                <span id="networkBadge" class="network-badge"></span>
             </div>
-            <button class="btn-logout" onclick="logout()">Logout</button>
+            <button class="btn-danger" onclick="logout()">Logout</button>
         </div>
 
-        <div class="app-container">
+        <!-- ================= IT ASSET DASHBOARD (Admin / User) ================= -->
+        <div id="itDashboard" class="app-container" style="display:none;">
             <h2 class="app-title">IT Asset Management Database</h2>
 
-            <!-- Dashboard -->
             <div class="dashboard-grid">
-                <div class="dash-card"><div class="dash-title">Total Assets</div><div class="dash-value" id="dashTotal">0</div></div>
-                <div class="dash-card"><div class="dash-title">Desktops</div><div class="dash-value" id="dashDesktops">0</div></div>
-                <div class="dash-card"><div class="dash-title">Laptops</div><div class="dash-value" id="dashLaptops">0</div></div>
-                <div class="dash-card"><div class="dash-title">Departments</div><div class="dash-value" id="dashDepts">0</div></div>
+                <div class="dash-card"><div class="dash-title">Total Assets</div><div class="dash-value" id="itTotal">0</div></div>
+                <div class="dash-card"><div class="dash-title">Desktops</div><div class="dash-value" id="itDesktops">0</div></div>
+                <div class="dash-card"><div class="dash-title">Laptops</div><div class="dash-value" id="itLaptops">0</div></div>
+                <div class="dash-card"><div class="dash-title">Departments</div><div class="dash-value" id="itDepts">0</div></div>
             </div>
             
-            <!-- Data Entry Form -->
-            <div class="form-section admin-only" id="formSection">
-                <form id="dataForm">
+            <div class="form-section admin-only" id="itFormSection">
+                <form id="itForm">
                     <div class="form-grid">
                         <div class="form-group"><label>User Name</label><input type="text" id="userName" required></div>
                         <div class="form-group"><label>Location</label><input type="text" id="location" required></div>
@@ -171,56 +169,94 @@
                         <div class="form-group"><label>Xerox Model</label><input type="text" id="xeroxModel"></div>
                         <div class="form-group"><label>Xerox Serial</label><input type="text" id="xeroxSerial"></div>
                     </div>
-                    <div class="submit-container">
-                        <button type="submit" id="submitBtn">Add Record</button>
-                    </div>
+                    <div class="submit-container"><button type="submit" class="btn-primary" id="itSubmitBtn">Add IT Record</button></div>
                 </form>
             </div>
 
-            <!-- Action Bar -->
             <div class="action-bar">
-                <div class="search-section"><input type="text" id="searchInput" placeholder="🔍 Search User Name or Serial No..."></div>
-                <div class="import-section admin-only" id="importSection">
-                    <label for="importFile"><strong>Import Excel:</strong></label>
-                    <input type="file" id="importFile" accept=".xlsx, .xls, .csv">
+                <div class="search-section"><input type="text" id="itSearch" placeholder="🔍 Search IT Assets..."></div>
+                <div class="import-section admin-only" id="itImportSection">
+                    <label style="color:#1a73e8; margin-right:8px;"><strong>📂 Import Excel:</strong></label>
+                    <input type="file" id="itImportFile" accept=".xlsx, .xls, .csv">
                 </div>
                 <div>
-                    <!-- Clear All Button (Admin Only) -->
-                    <button type="button" class="btn-danger admin-only" id="clearAllBtn" onclick="clearAllData()">🗑️ Clear All</button>
-                    
-                    <button type="button" class="btn-print" onclick="window.print()">🖨️ Print Data</button>
-                    <button type="button" class="btn-export" onclick="exportToExcel()">📥 Export to Excel</button>
+                    <button type="button" class="btn-danger admin-only" id="itClearAllBtn" onclick="clearAllItData()">🗑️ Clear All</button>
+                    <button type="button" class="btn-print" onclick="window.print()">🖨️ Print</button>
+                    <button type="button" class="btn-export" onclick="exportItExcel()">📥 Export</button>
                 </div>
             </div>
 
-            <!-- Data Table -->
             <div class="table-responsive">
-                <div id="loadingOverlay">Loading from Cloud...</div>
+                <div id="itLoading"></div>
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>User Name</th>
-                            <th>Location</th>
-                            <th>Department</th>
-                            <th>System Type</th>
-                            <th>Model No</th>
-                            <th>Serial Number</th>
-                            <th>Processor</th>
-                            <th>RAM</th>
-                            <th>Harddisk</th>
-                            <th>Printer Model</th>
-                            <th>Printer Serial</th>
-                            <th>UPS Model</th>
-                            <th>UPS Serial</th>
-                            <th>Xerox Model</th>
-                            <th>Xerox Serial</th>
-                            <th class="action-col" id="actionsHeader">Actions</th> 
+                            <th>ID</th><th>User Name</th><th>Location</th><th>Department</th><th>System Type</th><th>Model No</th>
+                            <th>Serial Number</th><th>Processor</th><th>RAM</th><th>Harddisk</th><th>Printer Model</th>
+                            <th>Printer Serial</th><th>UPS Model</th><th>UPS Serial</th><th>Xerox Model</th><th>Xerox Serial</th>
+                            <th class="action-col admin-only" id="itActionsHeader">Actions</th> 
                         </tr>
                     </thead>
-                    <tbody id="dataTableBody">
-                        <!-- Data will populate here -->
-                    </tbody>
+                    <tbody id="itTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= EMPLOYEE DASHBOARD (Emp Only) ================= -->
+        <div id="empDashboard" class="app-container" style="display:none;">
+            <h2 class="app-title">Employee Data Directory</h2>
+
+            <div class="dashboard-grid">
+                <div class="dash-card"><div class="dash-title">Total Employees</div><div class="dash-value" id="empTotal">0</div></div>
+                <div class="dash-card"><div class="dash-title">Active Departments</div><div class="dash-value" id="empDepts">0</div></div>
+            </div>
+            
+            <div class="form-section">
+                <form id="empForm">
+                    <div class="form-grid">
+                        <div class="form-group"><label>EMP ID</label><input type="text" id="empId" required></div>
+                        <div class="form-group"><label>EMPLOYEE NAME</label><input type="text" id="empName" required></div>
+                        <div class="form-group"><label>NEW DESIGNATION</label><input type="text" id="designation"></div>
+                        <div class="form-group"><label>DEPARTMENT</label><input type="text" id="empDepartment" required></div>
+                        <div class="form-group"><label>DIVISION</label><input type="text" id="division"></div>
+                        <div class="form-group"><label>DATE OF JOINING</label><input type="text" placeholder="DD-MM-YYYY" id="doj"></div>
+                        <div class="form-group"><label>DATE OF LEAVING</label><input type="text" placeholder="DD-MM-YYYY" id="dol"></div>
+                        <div class="form-group"><label>INSTITUTION</label><input type="text" id="institution"></div>
+                        <div class="form-group"><label>BANK ACCOUNT NO</label><input type="text" id="bankAcc"></div>
+                        <div class="form-group"><label>IFSC</label><input type="text" id="ifsc"></div>
+                        <div class="form-group"><label>REMARK</label><input type="text" id="remark"></div>
+                    </div>
+                    <div class="submit-container"><button type="submit" class="btn-primary" id="empSubmitBtn">Add Employee</button></div>
+                </form>
+            </div>
+
+            <div class="action-bar">
+                <div class="search-section"><input type="text" id="empSearch" placeholder="🔍 Search Employee Name or ID..."></div>
+                
+                <div class="import-section">
+                    <label style="color:#28a745; margin-right:8px;"><strong>📂 Import Employee Data:</strong></label>
+                    <input type="file" id="empImportFile" accept=".xlsx, .xls, .csv">
+                </div>
+                
+                <div>
+                    <button type="button" class="btn-danger" id="empClearAllBtn" onclick="clearAllEmpData()">🗑️ Clear All</button>
+                    <button type="button" class="btn-print" onclick="window.print()">🖨️ Print</button>
+                    <button type="button" class="btn-export" onclick="exportEmpExcel()">📥 Export</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <div id="empLoading"></div>
+                <table style="min-width: 1200px;">
+                    <thead>
+                        <tr>
+                            <th>SR. NO</th><th>EMP ID</th><th>EMPLOYEE NAME</th><th>NEW DESIGNATION</th>
+                            <th>DEPARTMENT</th><th>DIVISION</th><th>DATE OF JOINING</th><th>DATE OF LEAVING</th>
+                            <th>INSTITUTION</th><th>BANK ACCOUNT NO</th><th>IFSC</th><th>REMARK</th>
+                            <th class="action-col">Actions</th> 
+                        </tr>
+                    </thead>
+                    <tbody id="empTableBody"></tbody>
                 </table>
             </div>
         </div>
@@ -228,45 +264,54 @@
 
 <script>
     // ==========================================
-    // 1. SUPABASE INITIALIZATION
+    // 1. SUPABASE / OFFLINE FALLBACK CONFIG
     // ==========================================
-    
-    // ⚠️ IMPORTANT: PASTE YOUR SUPABASE DETAILS HERE ⚠️
     const SUPABASE_URL = 'https://enxrotnklzvbjvkkoiio.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVueHJvdG5rbHp2Ymp2a2tvaWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwOTg0ODYsImV4cCI6MjEwNjY3NDQ4Nn0.NhOLRyNXe1xhPwqNRKxYHCTs9zRSuz5lO25Z4v-Z3Mc';
     
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const isCloudConnected = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL.startsWith('http');
+    
+    let supabaseClient = null;
+    if (isCloudConnected) {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        document.getElementById('networkBadge').innerText = 'CLOUD MODE';
+        document.getElementById('networkBadge').style.backgroundColor = '#10b981'; 
+    } else {
+        document.getElementById('networkBadge').innerText = 'OFFLINE MODE (Local Storage)';
+        document.getElementById('networkBadge').style.backgroundColor = '#f59e0b'; 
+    }
 
     // ==========================================
-    // 2. DOM & STATE VARIABLES
+    // 2. STATE VARIABLES
     // ==========================================
-    let dataList = []; 
-    let editId = null; 
+    let itDataList = []; 
+    let empDataList = []; 
+    let itEditId = null; 
+    let empEditId = null; 
 
-    const loginScreen = document.getElementById('loginScreen');
-    const mainApp = document.getElementById('mainApp');
-    const roleBadge = document.getElementById('roleBadge');
-    
-    // Admin specific elements
-    const formSection = document.getElementById('formSection');
-    const importSection = document.getElementById('importSection');
-    const clearAllBtn = document.getElementById('clearAllBtn');
-    const actionsHeader = document.getElementById('actionsHeader');
-    
-    const dataForm = document.getElementById('dataForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const searchInput = document.getElementById('searchInput');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    
     const getVal = (id) => document.getElementById(id).value;
     const setVal = (id, val) => document.getElementById(id).value = val || '';
 
     // ==========================================
+    // DATE FORMATTER UTILITY
+    // ==========================================
+    // This fixes the issue with Excel dates importing as 2020-09-19T18:29:50.000Z
+    function formatExcelDate(dateVal) {
+        if (!dateVal) return '';
+        // If SheetJS gives us a raw JavaScript Date object
+        if (dateVal instanceof Date) {
+            let day = ("0" + dateVal.getDate()).slice(-2);
+            let month = ("0" + (dateVal.getMonth() + 1)).slice(-2);
+            let year = dateVal.getFullYear();
+            return `${day}-${month}-${year}`; 
+        }
+        // If it's already a string, just return it
+        return dateVal.toString();
+    }
+
+    // ==========================================
     // 3. LOGIN LOGIC
     // ==========================================
-    const ADMIN_USER = "admin"; const ADMIN_PASS = "admin123";
-    const STAFF_USER = "user";  const STAFF_PASS = "user123";
-
     if (sessionStorage.getItem('isLoggedIn') === 'true') {
         showAppBasedOnRole(sessionStorage.getItem('role'));
     }
@@ -275,13 +320,11 @@
         e.preventDefault();
         const user = document.getElementById('loginUser').value;
         const pass = document.getElementById('loginPass').value;
-        if (user === ADMIN_USER && pass === ADMIN_PASS) {
-            handleLoginSuccess('admin');
-        } else if (user === STAFF_USER && pass === STAFF_PASS) {
-            handleLoginSuccess('user');
-        } else {
-            document.getElementById('loginError').style.display = 'block';
-        }
+        
+        if (user === 'admin' && pass === 'admin123') handleLoginSuccess('admin');
+        else if (user === 'user' && pass === 'user123') handleLoginSuccess('user');
+        else if (user === 'emp' && pass === 'emp123') handleLoginSuccess('emp');
+        else document.getElementById('loginError').style.display = 'block';
     });
 
     function handleLoginSuccess(role) {
@@ -293,63 +336,71 @@
     }
 
     function showAppBasedOnRole(role) {
-        loginScreen.style.display = 'none';
-        mainApp.style.display = 'block';
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
         
+        const itDash = document.getElementById('itDashboard');
+        const empDash = document.getElementById('empDashboard');
+        const roleBadge = document.getElementById('roleBadge');
+
         if (role === 'admin') {
-            roleBadge.innerText = 'ADMIN ACCOUNT';
-            roleBadge.style.backgroundColor = '#28a745';
-            formSection.style.display = 'block';
-            importSection.style.display = 'flex';
-            clearAllBtn.style.display = 'inline-block';
-            actionsHeader.style.display = 'table-cell';
-        } else {
-            roleBadge.innerText = 'USER ACCOUNT (VIEW ONLY)';
-            roleBadge.style.backgroundColor = '#6c757d';
-            formSection.style.display = 'none';
-            importSection.style.display = 'none';
-            clearAllBtn.style.display = 'none';
-            actionsHeader.style.display = 'none';
+            roleBadge.innerText = 'IT ADMIN'; roleBadge.style.backgroundColor = '#28a745';
+            itDash.style.display = 'block'; empDash.style.display = 'none';
+            document.getElementById('itFormSection').style.display = 'block';
+            document.getElementById('itImportSection').style.display = 'flex';
+            document.getElementById('itClearAllBtn').style.display = 'inline-block';
+            document.getElementById('itActionsHeader').style.display = 'table-cell';
+            loadItData();
+        } else if (role === 'user') {
+            roleBadge.innerText = 'IT STAFF (VIEW ONLY)'; roleBadge.style.backgroundColor = '#6c757d';
+            itDash.style.display = 'block'; empDash.style.display = 'none';
+            document.getElementById('itFormSection').style.display = 'none';
+            document.getElementById('itImportSection').style.display = 'none';
+            document.getElementById('itClearAllBtn').style.display = 'none';
+            document.getElementById('itActionsHeader').style.display = 'none';
+            loadItData();
+        } else if (role === 'emp') {
+            roleBadge.innerText = 'HR EMPLOYEE PANEL'; roleBadge.style.backgroundColor = '#8b5cf6';
+            itDash.style.display = 'none'; empDash.style.display = 'block';
+            loadEmpData();
         }
-        
-        fetchDataFromCloud(); 
     }
 
     function logout() {
-        sessionStorage.removeItem('isLoggedIn');
-        sessionStorage.removeItem('role');
-        mainApp.style.display = 'none';
-        loginScreen.style.display = 'flex';
+        sessionStorage.clear();
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('loginUser').value = '';
     }
 
     // ==========================================
-    // 4. CLOUD DATABASE LOGIC (SUPABASE)
+    // 4. DATABASE HANDLERS
     // ==========================================
     
-    async function fetchDataFromCloud() {
-        loadingOverlay.style.display = 'flex';
-        
-        const { data, error } = await supabaseClient
-            .from('it_assets')
-            .select('*')
-            .order('id', { ascending: true });
-
-        if (error) {
-            alert("Error connecting to database. Did you add your Supabase URL & Key in the code?");
-            console.error(error);
+    async function loadItData() {
+        if (isCloudConnected) {
+            const { data } = await supabaseClient.from('it_assets').select('*').order('id', { ascending: true });
+            if (data) itDataList = data;
         } else {
-            dataList = data;
-            renderTable();
+            itDataList = JSON.parse(localStorage.getItem('itAssetData')) || [];
         }
-        loadingOverlay.style.display = 'none';
+        renderItTable();
+    }
+    
+    async function loadEmpData() {
+        if (isCloudConnected) {
+            const { data } = await supabaseClient.from('employee_data').select('*').order('id', { ascending: true });
+            if (data) empDataList = data;
+        } else {
+            empDataList = JSON.parse(localStorage.getItem('empData')) || [];
+        }
+        renderEmpTable();
     }
 
-    dataForm.addEventListener('submit', async function(e) {
+    document.getElementById('itForm').addEventListener('submit', async function(e) {
         e.preventDefault(); 
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Saving to Cloud...';
-
+        const btn = document.getElementById('itSubmitBtn'); btn.disabled = true;
+        
         const newData = {
             userName: getVal('userName'), location: getVal('location'), department: getVal('department'),
             systemType: getVal('systemType'), sysModel: getVal('sysModel'), sysSerial: getVal('sysSerial'),
@@ -359,249 +410,238 @@
             xeroxModel: getVal('xeroxModel'), xeroxSerial: getVal('xeroxSerial')
         };
 
-        if (editId === null) {
-            const { error } = await supabaseClient.from('it_assets').insert([newData]);
-            if (error) alert("Error adding data: " + error.message);
+        if (isCloudConnected) {
+            if (itEditId === null) await supabaseClient.from('it_assets').insert([newData]);
+            else await supabaseClient.from('it_assets').update(newData).eq('id', itEditId);
         } else {
-            const { error } = await supabaseClient.from('it_assets').update(newData).eq('id', editId);
-            if (error) alert("Error updating data: " + error.message);
-            
-            editId = null;
-            submitBtn.style.backgroundColor = '#1a73e8';
+            if (itEditId === null) itDataList.push({...newData, id: Date.now()});
+            else {
+                const idx = itDataList.findIndex(x => x.id === itEditId);
+                itDataList[idx] = {...newData, id: itEditId};
+            }
+            localStorage.setItem('itAssetData', JSON.stringify(itDataList));
         }
 
-        submitBtn.textContent = 'Add Record';
-        submitBtn.disabled = false;
-        dataForm.reset(); 
-        
-        await fetchDataFromCloud();
+        itEditId = null; btn.textContent = 'Add IT Record'; btn.disabled = false;
+        document.getElementById('itForm').reset(); 
+        await loadItData();
     });
 
-    async function deleteData(dbId) {
-        if (confirm('Are you sure you want to delete this asset record permanently from the cloud?')) {
-            loadingOverlay.style.display = 'flex';
-            const { error } = await supabaseClient.from('it_assets').delete().eq('id', dbId);
-            
-            if(error) alert("Error deleting data: " + error.message);
-            await fetchDataFromCloud();
-        }
-    }
-    
-    // --- NEW: CLEAR ALL FUNCTION ---
-    async function clearAllData() {
-        if (confirm('🚨 WARNING: Are you absolutely sure you want to permanently delete ALL data? This action cannot be undone!')) {
-            // Second confirmation just to be safe
-            if (confirm('Final warning: Delete everything?')) {
-                loadingOverlay.style.display = 'flex';
-                // Supabase requires a filter for deletes. Deleting where id > 0 deletes everything.
-                const { error } = await supabaseClient.from('it_assets').delete().gt('id', 0);
-                
-                if(error) {
-                    alert("Error clearing data: " + error.message);
-                } else {
-                    alert("All data has been successfully cleared.");
-                }
-                await fetchDataFromCloud();
-            }
-        }
-    }
-
-    function editData(dbId) {
-        const data = dataList.find(item => item.id === dbId);
-        if(!data) return;
-
-        setVal('userName', data.userName || data.username); 
-        setVal('location', data.location); 
-        setVal('department', data.department);
-        setVal('systemType', data.systemType || data.systemtype); 
-        setVal('sysModel', data.sysModel || data.sysmodel); 
-        setVal('sysSerial', data.sysSerial || data.sysserial);
-        setVal('processor', data.processor); 
-        setVal('ram', data.ram); 
-        setVal('hdd', data.hdd);
-        setVal('printerModel', data.printerModel || data.printermodel); 
-        setVal('printerSerial', data.printerSerial || data.printerserial);
-        setVal('upsModel', data.upsModel || data.upsmodel); 
-        setVal('upsSerial', data.upsSerial || data.upsserial);
-        setVal('xeroxModel', data.xeroxModel || data.xeroxmodel); 
-        setVal('xeroxSerial', data.xeroxSerial || data.xeroxserial);
+    document.getElementById('empForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); 
+        const btn = document.getElementById('empSubmitBtn'); btn.disabled = true;
         
-        editId = dbId;
-        submitBtn.textContent = 'Update Cloud Record';
-        submitBtn.style.backgroundColor = '#ffc107';
-        window.scrollTo(0, 0); 
-    }
+        const newData = {
+            empId: getVal('empId'), empName: getVal('empName'), designation: getVal('designation'),
+            department: getVal('empDepartment'), division: getVal('division'), doj: getVal('doj'), dol: getVal('dol'),
+            institution: getVal('institution'), bankAcc: getVal('bankAcc'), ifsc: getVal('ifsc'), remark: getVal('remark')
+        };
 
-    // ==========================================
-    // 5. RENDERING & UI LOGIC
-    // ==========================================
-
-    function updateDashboard() {
-        let desktops = 0; 
-        let laptops = 0; 
-        let departments = new Set(); 
-
-        dataList.forEach(item => {
-            let isDesktop = false;
-            let isLaptop = false;
-            let foundDept = '';
-
-            // This loops through EVERY single column in your database to ensure nothing is missed
-            for (let key in item) {
-                if (item[key]) {
-                    let valStr = item[key].toString().toLowerCase().trim();
-                    
-                    if (valStr.includes('desktop')) isDesktop = true;
-                    if (valStr.includes('laptop')) isLaptop = true;
-
-                    if (key.toLowerCase().includes('department')) {
-                        foundDept = valStr;
-                    }
-                }
+        if (isCloudConnected) {
+            if (empEditId === null) await supabaseClient.from('employee_data').insert([newData]);
+            else await supabaseClient.from('employee_data').update(newData).eq('id', empEditId);
+        } else {
+            if (empEditId === null) empDataList.push({...newData, id: Date.now()});
+            else {
+                const idx = empDataList.findIndex(x => x.id === empEditId);
+                empDataList[idx] = {...newData, id: empEditId};
             }
+            localStorage.setItem('empData', JSON.stringify(empDataList));
+        }
 
-            if (isDesktop) desktops++;
-            if (isLaptop) laptops++;
-            if (foundDept) departments.add(foundDept);
-        });
+        empEditId = null; btn.textContent = 'Add Employee'; btn.disabled = false;
+        document.getElementById('empForm').reset(); 
+        await loadEmpData();
+    });
 
-        document.getElementById('dashTotal').innerText = dataList.length;
-        document.getElementById('dashDesktops').innerText = desktops;
-        document.getElementById('dashLaptops').innerText = laptops;
-        document.getElementById('dashDepts').innerText = departments.size;
+    async function deleteItData(id) {
+        if (!confirm('Delete this IT record?')) return;
+        if (isCloudConnected) await supabaseClient.from('it_assets').delete().eq('id', id);
+        else { itDataList = itDataList.filter(x => x.id !== id); localStorage.setItem('itAssetData', JSON.stringify(itDataList)); }
+        loadItData();
     }
 
-    function renderTable(dataToRender = dataList) {
-        const tbody = document.getElementById('dataTableBody');
-        tbody.innerHTML = ''; 
-        const currentRole = sessionStorage.getItem('role');
+    async function deleteEmpData(id) {
+        if (!confirm('Delete this Employee record?')) return;
+        if (isCloudConnected) await supabaseClient.from('employee_data').delete().eq('id', id);
+        else { empDataList = empDataList.filter(x => x.id !== id); localStorage.setItem('empData', JSON.stringify(empDataList)); }
+        loadEmpData();
+    }
+
+    // --- CLEAR ALL LOGIC ---
+    async function clearAllItData() {
+        if (confirm('🚨 WARNING: Are you sure you want to permanently delete ALL IT Assets?')) {
+            if (confirm('Final warning: Delete everything?')) {
+                if (isCloudConnected) {
+                    const { error } = await supabaseClient.from('it_assets').delete().gt('id', 0);
+                    if(error) alert("Error: " + error.message);
+                } else {
+                    itDataList = []; localStorage.removeItem('itAssetData');
+                }
+                alert('All IT Data cleared.');
+                await loadItData();
+            }
+        }
+    }
+
+    async function clearAllEmpData() {
+        if (confirm('🚨 WARNING: Are you sure you want to permanently delete ALL Employee Data?')) {
+            if (confirm('Final warning: Delete everything?')) {
+                if (isCloudConnected) {
+                    const { error } = await supabaseClient.from('employee_data').delete().gt('id', 0);
+                    if(error) alert("Error: " + error.message);
+                } else {
+                    empDataList = []; localStorage.removeItem('empData');
+                }
+                alert('All Employee Data cleared.');
+                await loadEmpData();
+            }
+        }
+    }
+
+    function editItData(id) {
+        const data = itDataList.find(x => x.id === id); if(!data) return;
+        setVal('userName', data.userName); setVal('location', data.location); setVal('department', data.department);
+        setVal('systemType', data.systemType); setVal('sysModel', data.sysModel); setVal('sysSerial', data.sysSerial);
+        setVal('processor', data.processor); setVal('ram', data.ram); setVal('hdd', data.hdd);
+        setVal('printerModel', data.printerModel); setVal('printerSerial', data.printerSerial);
+        setVal('upsModel', data.upsModel); setVal('upsSerial', data.upsSerial);
+        setVal('xeroxModel', data.xeroxModel); setVal('xeroxSerial', data.xeroxSerial);
+        itEditId = id; document.getElementById('itSubmitBtn').textContent = 'Update Record'; window.scrollTo(0, 0); 
+    }
+
+    function editEmpData(id) {
+        const data = empDataList.find(x => x.id === id); if(!data) return;
+        setVal('empId', data.empId); setVal('empName', data.empName); setVal('designation', data.designation);
+        setVal('empDepartment', data.department); setVal('division', data.division); setVal('doj', data.doj);
+        setVal('dol', data.dol); setVal('institution', data.institution); setVal('bankAcc', data.bankAcc);
+        setVal('ifsc', data.ifsc); setVal('remark', data.remark);
+        empEditId = id; document.getElementById('empSubmitBtn').textContent = 'Update Employee'; window.scrollTo(0, 0); 
+    }
+
+    // ==========================================
+    // 5. RENDERING & DASHBOARDS
+    // ==========================================
+    function renderItTable(dataToRender = itDataList) {
+        const tbody = document.getElementById('itTableBody'); tbody.innerHTML = ''; 
+        let desktops = 0; let laptops = 0; let depts = new Set();
+        const isAdmin = sessionStorage.getItem('role') === 'admin';
 
         dataToRender.forEach((data, index) => {
-            const tr = document.createElement('tr');
-            
-            let rowHTML = `
-                <td>${index + 1}</td>
-                <td>${data.userName || data.username || ''}</td>
-                <td>${data.location || ''}</td>
-                <td>${data.department || ''}</td>
-                <td>${data.systemType || data.systemtype || ''}</td>
-                <td>${data.sysModel || data.sysmodel || ''}</td>
-                <td>${data.sysSerial || data.sysserial || ''}</td>
-                <td>${data.processor || ''}</td>
-                <td>${data.ram || ''}</td>
-                <td>${data.hdd || ''}</td>
-                <td>${data.printerModel || data.printermodel || ''}</td>
-                <td>${data.printerSerial || data.printerserial || ''}</td>
-                <td>${data.upsModel || data.upsmodel || ''}</td>
-                <td>${data.upsSerial || data.upsserial || ''}</td>
-                <td>${data.xeroxModel || data.xeroxmodel || ''}</td>
-                <td>${data.xeroxSerial || data.xeroxserial || ''}</td>
-            `;
+            if(data.systemType?.toLowerCase().includes('desktop')) desktops++;
+            if(data.systemType?.toLowerCase().includes('laptop')) laptops++;
+            if(data.department) depts.add(data.department.toLowerCase());
 
-            if (currentRole === 'admin') {
-                rowHTML += `
-                    <td class="action-col">
-                        <button class="btn-edit" onclick="editData(${data.id})">Edit</button>
-                        <button class="btn-delete" onclick="deleteData(${data.id})">Delete</button>
-                    </td>
-                `;
-            }
-            tr.innerHTML = rowHTML;
-            tbody.appendChild(tr);
+            let row = `<tr><td>${index + 1}</td><td>${data.userName||''}</td><td>${data.location||''}</td><td>${data.department||''}</td>
+                <td>${data.systemType||''}</td><td>${data.sysModel||''}</td><td>${data.sysSerial||''}</td><td>${data.processor||''}</td>
+                <td>${data.ram||''}</td><td>${data.hdd||''}</td><td>${data.printerModel||''}</td><td>${data.printerSerial||''}</td>
+                <td>${data.upsModel||''}</td><td>${data.upsSerial||''}</td><td>${data.xeroxModel||''}</td><td>${data.xeroxSerial||''}</td>`;
+            if (isAdmin) row += `<td class="action-col"><button class="btn-edit" onclick="editItData(${data.id})">Edit</button><button class="btn-delete" onclick="deleteItData(${data.id})">Delete</button></td>`;
+            row += '</tr>'; tbody.innerHTML += row;
         });
-        updateDashboard(); 
+        document.getElementById('itTotal').innerText = itDataList.length; document.getElementById('itDesktops').innerText = desktops;
+        document.getElementById('itLaptops').innerText = laptops; document.getElementById('itDepts').innerText = depts.size;
     }
 
-    searchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const filteredData = dataList.filter(item => {
-            const userStr = (item.userName || item.username || '').toLowerCase();
-            const sysSerStr = (item.sysSerial || item.sysserial || '').toLowerCase();
-            const printSerStr = (item.printerSerial || item.printerserial || '').toLowerCase();
-            const upsSerStr = (item.upsSerial || item.upsserial || '').toLowerCase();
-            const xeroxSerStr = (item.xeroxSerial || item.xeroxserial || '').toLowerCase();
+    function renderEmpTable(dataToRender = empDataList) {
+        const tbody = document.getElementById('empTableBody'); tbody.innerHTML = ''; 
+        let depts = new Set();
 
-            return userStr.includes(searchTerm) || sysSerStr.includes(searchTerm) || 
-                   printSerStr.includes(searchTerm) || upsSerStr.includes(searchTerm) || 
-                   xeroxSerStr.includes(searchTerm);
+        dataToRender.forEach((data, index) => {
+            if(data.department) depts.add(data.department.toLowerCase());
+
+            let row = `<tr>
+                <td>${index + 1}</td><td>${data.empId||''}</td><td>${data.empName||''}</td><td>${data.designation||''}</td>
+                <td>${data.department||''}</td><td>${data.division||''}</td><td>${data.doj||''}</td><td>${data.dol||''}</td>
+                <td>${data.institution||''}</td><td>${data.bankAcc||''}</td><td>${data.ifsc||''}</td><td>${data.remark||''}</td>
+                <td class="action-col"><button class="btn-edit" onclick="editEmpData(${data.id})">Edit</button><button class="btn-delete" onclick="deleteEmpData(${data.id})">Delete</button></td>
+            </tr>`;
+            tbody.innerHTML += row;
         });
-        renderTable(filteredData);
+        document.getElementById('empTotal').innerText = empDataList.length; 
+        document.getElementById('empDepts').innerText = depts.size;
+    }
+
+    document.getElementById('itSearch').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        renderItTable(itDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term)));
+    });
+    document.getElementById('empSearch').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        renderEmpTable(empDataList.filter(x => JSON.stringify(x).toLowerCase().includes(term)));
     });
 
     // ==========================================
-    // 6. EXPORT / BULK IMPORT (CLOUD SYNCED)
+    // 6. EXPORT / IMPORT
     // ==========================================
-
-    function exportToExcel() {
-        let currentSearch = searchInput.value.toLowerCase();
-        let dataToExport = dataList;
-
-        if(currentSearch) {
-            dataToExport = dataList.filter(item => {
-                const userStr = (item.userName || item.username || '').toLowerCase();
-                const sysSerStr = (item.sysSerial || item.sysserial || '').toLowerCase();
-                return userStr.includes(currentSearch) || sysSerStr.includes(currentSearch);
-            });
-        }
-        if(dataToExport.length === 0) { alert("No data to export!"); return; }
-
-        const cleanExport = dataToExport.map(({ id, ...rest }) => rest);
-        const worksheet = XLSX.utils.json_to_sheet(cleanExport);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "IT_Assets");
-        XLSX.writeFile(workbook, "IT_Inventory_Data.xlsx");
+    function exportItExcel() {
+        const clean = itDataList.map(({ id, ...rest }) => rest);
+        const ws = XLSX.utils.json_to_sheet(clean); const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "IT_Assets"); XLSX.writeFile(wb, "IT_Inventory.xlsx");
+    }
+    
+    function exportEmpExcel() {
+        const clean = empDataList.map(({ id, ...rest }) => rest);
+        const ws = XLSX.utils.json_to_sheet(clean); const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Employee_Data"); XLSX.writeFile(wb, "Employee_Directory.xlsx");
     }
 
-    document.getElementById('importFile').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
+    // IT Import
+    document.getElementById('itImportFile').addEventListener('change', function(e) {
+        const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = async function(e) {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheetName = workbook.SheetNames[0];
-                const rawImportedData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheetName]);
-
-                if (rawImportedData.length > 0) {
-                    const mappedData = rawImportedData.map(row => {
-                        return {
-                            userName: row['userName'] || row['User Name'] || row['username'] || '',
-                            location: row['location'] || row['Location'] || '',
-                            department: row['department'] || row['Department'] || '',
-                            systemType: row['systemType'] || row['System Type'] || row['Desktop \\ Laptop'] || row['systemtype'] || '',
-                            sysModel: row['sysModel'] || row['Model No'] || row['sysmodel'] || '',
-                            sysSerial: row['sysSerial'] || row['Serial Number'] || row['sysserial'] || '',
-                            processor: row['processor'] || row['Processor'] || '',
-                            ram: row['ram'] || row['Ram'] || row['RAM'] || '',
-                            hdd: row['hdd'] || row['Harddisk'] || '',
-                            printerModel: row['printerModel'] || row['Printer Model'] || row['printermodel'] || '',
-                            printerSerial: row['printerSerial'] || row['Serial Number_1'] || row['printerserial'] || '',
-                            upsModel: row['upsModel'] || row['UPS Model'] || row['upsmodel'] || '',
-                            upsSerial: row['upsSerial'] || row['Serial Number_2'] || row['upsserial'] || '',
-                            xeroxModel: row['xeroxModel'] || row['Xerox Model'] || row['xeroxmodel'] || '',
-                            xeroxSerial: row['xeroxSerial'] || row['Serial Number_3'] || row['xeroxserial'] || ''
-                        };
-                    });
-
-                    loadingOverlay.style.display = 'flex';
-                    const { error } = await supabaseClient.from('it_assets').insert(mappedData);
-                    
-                    if (error) {
-                        alert("Error importing to cloud: " + error.message);
-                    } else {
-                        alert(mappedData.length + ' records imported to the cloud successfully!');
-                        document.getElementById('importFile').value = '';
-                        await fetchDataFromCloud(); 
-                    }
-                }
-            } catch (error) {
-                alert('Error reading file! Make sure it is a valid Excel file.');
+            const data = new Uint8Array(e.target.result); const wb = XLSX.read(data, {type: 'array'});
+            const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+            if (raw.length > 0) {
+                const mapped = raw.map(r => ({
+                    userName: r['userName']||r['User Name']||'', location: r['location']||r['Location']||'', department: r['department']||r['Department']||'',
+                    systemType: r['systemType']||r['System Type']||'', sysModel: r['sysModel']||r['Model No']||'', sysSerial: r['sysSerial']||r['Serial Number']||''
+                }));
+                if (isCloudConnected) await supabaseClient.from('it_assets').insert(mapped);
+                else { itDataList = itDataList.concat(mapped.map(x=>({...x, id: Date.now()+Math.random()}))); localStorage.setItem('itAssetData', JSON.stringify(itDataList)); }
+                await loadItData(); document.getElementById('itImportFile').value = ''; alert('Imported!');
             }
-            loadingOverlay.style.display = 'none';
-        };
-        reader.readAsArrayBuffer(file);
+        }; reader.readAsArrayBuffer(file);
+    });
+
+    // EMP Import - With Date Formatting Fix applied!
+    document.getElementById('empImportFile').addEventListener('change', function(e) {
+        const file = e.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const data = new Uint8Array(e.target.result); 
+            // Setting cellDates true ensures Excel dates are read correctly
+            const wb = XLSX.read(data, {type: 'array', cellDates: true, dateNF: 'dd-mm-yyyy'});
+            const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+            
+            if (raw.length > 0) {
+                const mapped = raw.map(r => ({
+                    empId: r['empId']||r['EMP ID']||'', 
+                    empName: r['empName']||r['EMPLOYEE NAME']||'', 
+                    designation: r['designation']||r['NEW DESIGNATION']||'',
+                    department: r['department']||r['DEPARTMENT']||'', 
+                    division: r['division']||r['DIVISION']||'', 
+                    // Automatically pass through our new date formatter function
+                    doj: formatExcelDate(r['doj']||r['DATE OF JOINING']||r['ATE OF JOIN']), 
+                    dol: formatExcelDate(r['dol']||r['DATE OF LEAVING']||r['DATE OF LEAVIN']), 
+                    institution: r['institution']||r['INSTUTION']||'', 
+                    bankAcc: r['bankAcc']||r['BANK ACCOUNT NO']||r['BANK ACCOUNT N']||'', 
+                    ifsc: r['ifsc']||r['IFSC']||'', 
+                    remark: r['remark']||r['REMARK']||''
+                }));
+                
+                if (isCloudConnected) await supabaseClient.from('employee_data').insert(mapped);
+                else { 
+                    empDataList = empDataList.concat(mapped.map(x=>({...x, id: Date.now()+Math.random()}))); 
+                    localStorage.setItem('empData', JSON.stringify(empDataList)); 
+                }
+                
+                await loadEmpData(); 
+                document.getElementById('empImportFile').value = ''; 
+                alert('HR Employee Data imported successfully!');
+            }
+        }; reader.readAsArrayBuffer(file);
     });
 </script>
 </body>
