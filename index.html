@@ -240,6 +240,10 @@
         .btn-print { background: var(--text-main); color: white; }
         .btn-export { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
 
+        /* New Button Style for Color Toggle */
+        .btn-color { background: #fcd34d; color: #92400e; border: 1px solid #fbbf24; padding: 8px 14px; min-height: 34px; font-size: 13px; }
+        .btn-color:hover { background: #fde68a; }
+
         @media (max-width: 600px) {
             .action-buttons, .action-buttons button { width: 100%; }
             .submit-container button { width: 100%; }
@@ -260,6 +264,10 @@
         
         tr:last-child td { border-bottom: none; }
         tr:hover td { background-color: var(--bg-color); }
+
+        /* Red Row Highlight */
+        tr.row-red td { background-color: #fee2e2 !important; color: #991b1b; }
+        tr.row-red:hover td { background-color: #fca5a5 !important; }
 
         .admin-only { display: none; }
 
@@ -304,17 +312,6 @@
                 <button type="submit">Authenticate</button>
             </form>
             <p id="loginError" style="color: #fca5a5; font-size: 13px; display: none; margin-top: 14px; font-weight: 600;">Invalid Credentials</p>
-            
-            <!-- <div class="credentials-hint">
-                <div style="margin-bottom: 4px;"><strong>IT Admin (Full Access):</strong></div>
-                <div>User: <code>admin</code> | Pass: <code>admin123</code></div>
-                <hr>
-                <div style="margin-bottom: 4px;"><strong>IT Staff (View & Export):</strong></div>
-                <div>User: <code>user</code> | Pass: <code>user123</code></div>
-                <hr>
-                <div style="margin-bottom: 4px;"><strong>HR Employee (Directory):</strong></div>
-                <div>User: <code>emp</code> | Pass: <code>emp123</code></div>
-            </div> -->
         </div>
     </div>
 
@@ -414,8 +411,7 @@
                 </div>
             </div>
 
-            <!-- <div class="table-responsive">
-                <div id="itLoading">Updating...</div> -->
+            <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
@@ -770,6 +766,41 @@
         empEditId = id; document.getElementById('empSubmitBtn').textContent = 'Update Employee'; window.scrollTo(0, 0); 
     }
 
+    // New Function: Toggle Row Color State and Save to Database
+async function toggleItRowColor(id) {
+    const data = itDataList.find(x => x.id === id);
+    if (data) {
+        // Toggle the state (using is_red to match the database column)
+        const newColorState = !data.is_red;
+        data.is_red = newColorState;
+        
+        // Save permanently to Database or LocalStorage
+        if (isCloudConnected) {
+            const { error } = await supabaseClient
+                .from('it_assets')
+                .update({ is_red: newColorState })
+                .eq('id', id);
+                
+            if (error) console.error("Error saving color state:", error.message);
+        } else {
+            localStorage.setItem('itAssetData', JSON.stringify(itDataList));
+        }
+        
+        // Re-apply current filter/search to maintain view
+        const searchBox = document.getElementById('itSearch').value;
+        if (searchBox && !searchBox.startsWith('Filter:')) {
+            document.getElementById('itSearch').dispatchEvent(new Event('input'));
+        } else {
+            let activeType = 'all';
+            const activeCard = document.querySelector('#itDashboardGrid .dash-card.active');
+            if (activeCard) {
+                activeType = activeCard.id.replace('filter-', '');
+            }
+            filterItTable(activeType);
+        }
+    }
+}
+
     // ==========================================
     // 5. RENDERING & DASHBOARDS
     // ==========================================
@@ -828,8 +859,13 @@
         const tbody = document.getElementById('itTableBody'); tbody.innerHTML = ''; 
         const isAdmin = sessionStorage.getItem('role') === 'admin';
 
-        dataToRender.forEach((data, index) => {
-            let row = `<tr>
+        // Inside renderItTable(dataToRender = itDataList) { ...
+    
+    dataToRender.forEach((data, index) => {
+        // Change isRed to is_red to match the Supabase column
+        const rowClass = data.is_red ? 'row-red' : '';
+        
+        let row = `<tr class="${rowClass}">
                 <td>${index + 1}</td>
                 <td>${data.empId||data.empid||''}</td>
                 <td>${data.userName||data.username||''}</td>
@@ -847,7 +883,13 @@
                 <td>${data.upsSerial||data.upsserial||''}</td>
                 <td>${data.xeroxModel||data.xeroxmodel||''}</td>
                 <td>${data.xeroxSerial||data.xeroxserial||''}</td>`;
-            if (isAdmin) row += `<td class="action-col"><button class="btn-edit" onclick="editItData(${data.id})">Edit</button><button class="btn-delete" onclick="deleteItData(${data.id})">Delete</button></td>`;
+            if (isAdmin) {
+                row += `<td class="action-col" style="display: flex; gap: 5px; flex-wrap: wrap; min-width: 200px;">
+                    <button class="btn-edit" onclick="editItData(${data.id})">Edit</button>
+                    <button class="btn-delete" onclick="deleteItData(${data.id})">Delete</button>
+                    <button class="btn-color" onclick="toggleItRowColor(${data.id})">Color</button>
+                </td>`;
+            }
             row += '</tr>'; tbody.innerHTML += row;
         });
     }
@@ -897,7 +939,8 @@
         else if (searchBox === 'Filter: UPS') dataToExport = itDataList.filter(d => hasValidHardwareData(d.upsModel, d.upsmodel, d.upsSerial, d.upsserial));
         else if (searchBox && !searchBox.startsWith('Filter:')) dataToExport = itDataList.filter(x => JSON.stringify(x).toLowerCase().includes(searchBox.toLowerCase()));
 
-        const clean = dataToExport.map(({ id, ...rest }) => rest);
+        // We only declare 'clean' once here:
+        const clean = dataToExport.map(({ id, is_red, isRed, ...rest }) => rest);
         const ws = XLSX.utils.json_to_sheet(clean); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "IT_Assets"); XLSX.writeFile(wb, "IT_Inventory.xlsx");
     }
